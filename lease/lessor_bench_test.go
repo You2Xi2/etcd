@@ -18,7 +18,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/coreos/etcd/mvcc/backend"
+	"go.etcd.io/etcd/mvcc/backend"
 )
 
 func BenchmarkLessorFindExpired1(b *testing.B)       { benchmarkLessorFindExpired(1, b) }

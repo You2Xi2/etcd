@@ -1,2 +1,2 @@
 
-Please read https://github.com/coreos/etcd/blob/master/Documentation/reporting_bugs.md.
+Please read <https://go.etcd.io/etcd/blob/master/Documentation/reporting_bugs.md>.

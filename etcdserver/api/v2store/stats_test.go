@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coreos/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 // Ensure that a successful Get is recorded in the stats.
@@ -98,7 +98,7 @@ func TestStoreStatsDeleteFail(t *testing.T) {
 	testutil.AssertEqual(t, uint64(1), s.Stats.DeleteFail, "")
 }
 
-//Ensure that the number of expirations is recorded in the stats.
+// Ensure that the number of expirations is recorded in the stats.
 func TestStoreStatsExpireCount(t *testing.T) {
 	s := newStore()
 	fc := newFakeClock()

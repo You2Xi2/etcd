@@ -23,23 +23,23 @@ We might ask for further information to locate a bug. A duplicated bug report wi
 ### How to get a stack trace
 
 ``` bash
-$ kill -QUIT $PID
+kill -QUIT $PID
 ```
 
 ### How to get etcd version
 
 ``` bash
-$ etcd --version
+etcd --version
 ```
 
 ### How to get etcd configuration and log when it runs as systemd service ‘etcd2.service’
 
 ``` bash
-$ sudo systemctl cat etcd2
-$ sudo journalctl -u etcd2
+sudo systemctl cat etcd2
+sudo journalctl -u etcd2
 ```
 
 Due to an upstream systemd bug, journald may miss the last few log lines when its processes exit. If journalctl says etcd stopped without fatal or panic message, try `sudo journalctl -f -t etcd2` to get full log.
 
-[etcd-issue]: https://github.com/coreos/etcd/issues/new
+[etcd-issue]: https://go.etcd.io/etcd/issues/new
 [filing-good-bugs]: http://fantasai.inkedblade.net/style/talks/filing-good-bugs/

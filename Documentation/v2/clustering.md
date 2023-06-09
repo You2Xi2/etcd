@@ -2,7 +2,6 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Clustering Guide
 
 ## Overview
@@ -56,6 +55,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --initial-cluster infra0=http://10.0.1.10:2380,infra1=http://10.0.1.11:2380,infra2=http://10.0.1.12:2380 \
   --initial-cluster-state new
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -65,6 +65,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --initial-cluster infra0=http://10.0.1.10:2380,infra1=http://10.0.1.11:2380,infra2=http://10.0.1.12:2380 \
   --initial-cluster-state new
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -142,7 +143,7 @@ Moreover, discovery URLs should ONLY be used for the initial bootstrapping of a 
 Discovery uses an existing cluster to bootstrap itself. If you are using your own etcd cluster you can create a URL like so:
 
 ```
-$ curl -X PUT https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83/_config/size -d value=3
+curl -X PUT https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83/_config/size -d value=3
 ```
 
 By setting the size key to the URL, you create a discovery URL with an expected cluster size of 3.
@@ -162,6 +163,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --advertise-client-urls http://10.0.1.10:2379 \
   --discovery https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -169,6 +171,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --advertise-client-urls http://10.0.1.11:2379 \
   --discovery https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -211,6 +214,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --advertise-client-urls http://10.0.1.10:2379 \
   --discovery https://discovery.etcd.io/3e86b59982e49066c5d813af1c2e2579cbf573de
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -218,6 +222,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --advertise-client-urls http://10.0.1.11:2379 \
   --discovery https://discovery.etcd.io/3e86b59982e49066c5d813af1c2e2579cbf573de
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -233,7 +238,6 @@ You can use the environment variable `ETCD_DISCOVERY_PROXY` to cause etcd to use
 #### Error and Warning Cases
 
 ##### Discovery Server Errors
-
 
 ```
 $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
@@ -326,7 +330,7 @@ infra2.example.com.  300  IN  A  10.0.1.12
 
 etcd cluster members can listen on domain names or IP address, the bootstrap process will resolve DNS A records.
 
-The resolved address in `--initial-advertise-peer-urls` *must match* one of the resolved addresses in the SRV targets. The etcd member reads the resolved address to find out if it belongs to the cluster defined in the SRV records.
+The resolved address in `--initial-advertise-peer-urls` _must match_ one of the resolved addresses in the SRV targets. The etcd member reads the resolved address to find out if it belongs to the cluster defined in the SRV records.
 
 ```
 $ etcd --name infra0 \
@@ -401,7 +405,7 @@ $ etcd --name infra2 \
 DNS SRV records can also be used to configure the list of peers for an etcd server running in proxy mode:
 
 ```
-$ etcd --proxy on --discovery-srv example.com
+etcd --proxy on --discovery-srv example.com
 ```
 
 #### etcd client configuration
@@ -413,12 +417,12 @@ The official [etcd/client][client] supports [DNS Discovery][client-discoverer].
 `etcdctl` also supports DNS Discovery by specifying the `--discovery-srv` option.
 
 ```
-$ etcdctl --discovery-srv example.com set foo bar
+etcdctl --discovery-srv example.com set foo bar
 ```
 
 #### Error Cases
 
-You might see an error like `cannot find local etcd $name from SRV records.`. That means the etcd member fails to find itself from the cluster defined in SRV records. The resolved address in `--initial-advertise-peer-urls` *must match* one of the resolved addresses in the SRV targets.
+You might see an error like `cannot find local etcd $name from SRV records.`. That means the etcd member fails to find itself from the cluster defined in SRV records. The resolved address in `--initial-advertise-peer-urls` _must match_ one of the resolved addresses in the SRV targets.
 
 # 0.4 to 2.0+ Migration Guide
 
@@ -436,7 +440,7 @@ To make understanding this feature easier, we changed the naming of some flags, 
 |-peers-file    |none      |Deprecated. The --initial-cluster flag provides a similar concept with different semantics. Please read this guide on cluster startup.|
 
 [client]: ../../client
-[client-discoverer]: https://godoc.org/github.com/coreos/etcd/client#Discoverer
+[client-discoverer]: https://godoc.org/go.etcd.io/etcd/client#Discoverer
 [conf-adv-client]: configuration.md#-advertise-client-urls
 [conf-listen-client]: configuration.md#-listen-client-urls
 [discovery-proto]: discovery_protocol.md

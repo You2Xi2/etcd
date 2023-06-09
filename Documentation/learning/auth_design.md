@@ -7,10 +7,10 @@ The v3 protocol uses gRPC as its transport instead of a RESTful interface like v
 ### Functionality requirements
 
 * Per connection authentication, not per request
-   * User ID + password based authentication implemented for the gRPC API
-   * Authentication must be refreshed after auth policy changes
+  * User ID + password based authentication implemented for the gRPC API
+  * Authentication must be refreshed after auth policy changes
 * Its functionality should be as simple and useful as v2
-   * v3 provides a flat key space, unlike the directory structure of v2. Permission checking will be provided as interval matching.
+  * v3 provides a flat key space, unlike the directory structure of v2. Permission checking will be provided as interval matching.
 * It should have stronger consistency guarantees than v2 auth
 
 ### Main required changes
@@ -25,8 +25,7 @@ The metadata for auth should also be stored and managed in the storage controlle
 
 The authentication mechanism in the etcd v2 protocol has a tricky part because the metadata consistency should work as in the above, but does not: each permission check is processed by the etcd member that receives the client request (etcdserver/api/v2http/client.go), including follower members. Therefore, it's possible the check may be based on stale metadata.
 
-
-This staleness means that auth configuration cannot be reflected as soon as operators execute etcdctl. Therefore there is no way to know how long the stale metadata is active. Practically, the configuration change is reflected immediately after the command execution. However, in some cases of heavy load, the inconsistent state can be prolonged and it might result in counter-intuitive situations for users and developers. It requires a workaround like this: https://github.com/coreos/etcd/pull/4317#issuecomment-179037582
+This staleness means that auth configuration cannot be reflected as soon as operators execute etcdctl. Therefore there is no way to know how long the stale metadata is active. Practically, the configuration change is reflected immediately after the command execution. However, in some cases of heavy load, the inconsistent state can be prolonged and it might result in counter-intuitive situations for users and developers. It requires a workaround like this: <https://go.etcd.io/etcd/pull/4317#issuecomment-179037582>
 
 ### Inconsistent permissions are unsafe for linearized requests
 
@@ -47,6 +46,7 @@ The client connection used to request the authentication token is typically thro
 `Authenticate()` RPC generates an authentication token based on a given user name and password. etcd saves and checks a configured password and a given password using Go's `bcrypt` package. By design, `bcrypt`'s password checking mechanism is computationally expensive, taking nearly 100ms on an ordinary x64 server. Therefore, performing this check in the state machine apply phase would cause performance trouble: the entire etcd cluster can only serve almost 10 `Authenticate()` requests per second.
 
 For good performance, the v3 auth mechanism checks passwords in etcd's API layer, where it can be parallelized outside of raft. However, this can lead to potential time-of-check/time-of-use (TOCTOU) permission lapses:
+
 1. client A sends a request `Authenticate()`
 1. the API layer processes the password checking part of `Authenticate()`
 1. another client B sends a request of `ChangePassword()` and the server completes it

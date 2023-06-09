@@ -2,12 +2,12 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 ## Upgrade etcd from 2.2 to 2.3
 
 In the general case, upgrading from etcd 2.2 to 2.3 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v2.2 processes and replace them with etcd v2.3 processes
- - after running all v2.3 processes, new features in v2.3 are available to the cluster
+
+- one by one, stop the etcd v2.2 processes and replace them with etcd v2.3 processes
+- after running all v2.3 processes, new features in v2.3 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
@@ -15,7 +15,7 @@ Before [starting an upgrade](#upgrade-procedure), read through the rest of this 
 
 #### Upgrade Requirements
 
-To upgrade an existing etcd deployment to 2.3, the running cluster must be 2.2 or greater. If it's before 2.2, please upgrade to [2.2](https://github.com/coreos/etcd/releases/tag/v2.2.0) before upgrading to 2.3.
+To upgrade an existing etcd deployment to 2.3, the running cluster must be 2.2 or greater. If it's before 2.2, please upgrade to [2.2](https://go.etcd.io/etcd/releases/tag/v2.2.0) before upgrading to 2.3.
 
 Also, to ensure a smooth rolling upgrade, the running cluster must be healthy. You can check the health of the cluster by using the `etcdctl cluster-health` command.
 
@@ -43,10 +43,9 @@ Please [backup the data directory](admin_guide.md#backing-up-the-datastore) of a
 
 ### Upgrade Procedure
 
-
 This example details the  upgrade of a three-member v2.2 ectd cluster running on a local machine.
 
-#### 1. Check upgrade requirements.
+#### 1. Check upgrade requirements
 
 Is the the cluster healthy and running v.2.2.x?
 
@@ -72,7 +71,7 @@ When each etcd process is stopped, expected errors will be logged by other clust
 2016-03-11 09:50:51.023821 W | etcdserver: cannot get the version of member 8211f1d0f64f3269 (Get http://127.0.0.1:12380/version: dial tcp 127.0.0.1:12380: getsockopt: connection refused)
 ```
 
-It’s a good idea at this point to  [backup the etcd data directory](https://github.com/coreos/etcd/blob/7f7e2cc79d9c5c342a6eb1e48c386b0223cf934e/Documentation/admin_guide.md#backing-up-the-datastore) to provide a downgrade path should any problems occur:
+It’s a good idea at this point to  [backup the etcd data directory](https://go.etcd.io/etcd/blob/7f7e2cc79d9c5c342a6eb1e48c386b0223cf934e/Documentation/admin_guide.md#backing-up-the-datastore) to provide a downgrade path should any problems occur:
 
 ```
 $ etcdctl backup \
@@ -98,7 +97,6 @@ member a8266ecf031671f3 is healthy: got healthy result from http://localhost:123
 cluster is healthy
 ```
 
-
 Upgraded members will log warnings like the following until the entire cluster is upgraded. This is expected and will cease after all etcd cluster members are upgraded to v2.3:
 
 ```
@@ -121,6 +119,4 @@ $ curl http://127.0.0.1:4001/version
 {"etcdserver":"2.3.x","etcdcluster":"2.3.0"}
 ```
 
-
 [etcd-contact]: https://coreos.com/etcd/?
-

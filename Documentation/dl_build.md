@@ -15,9 +15,9 @@ For those wanting to try the very latest version, build etcd from the `master` b
 To build `etcd` from the `master` branch without a `GOPATH` using the official `build` script:
 
 ```sh
-$ git clone https://github.com/coreos/etcd.git
-$ cd etcd
-$ ./build
+git clone https://go.etcd.io/etcd.git
+cd etcd
+./build
 ```
 
 To build a vendored `etcd` from the `master` branch via `go get`:
@@ -26,7 +26,7 @@ To build a vendored `etcd` from the `master` branch via `go get`:
 # GOPATH should be set
 $ echo $GOPATH
 /Users/example/go
-$ go get -v github.com/coreos/etcd
+$ go get -v go.etcd.io/etcd
 ```
 
 ## Test the installation
@@ -38,12 +38,13 @@ Check the etcd binary is built correctly by starting etcd and setting a key.
 If etcd is built without using GOPATH, run the following:
 
 ```
-$ ./bin/etcd
+./bin/etcd
 ```
+
 If etcd is built using GOPATH, run the following:
 
 ```
-$ $GOPATH/bin/etcd
+$GOPATH/bin/etcd
 ```
 
 ### Setting a key
@@ -57,8 +58,5 @@ OK
 
 If OK is printed, then etcd is working!
 
-[github-release]: https://github.com/coreos/etcd/releases/
-[go]: https://golang.org/doc/install
-[build-script]: ../build
-[cmd-directory]: ../cmd
+[github-release]: https://go.etcd.io/etcd/releases/
 [example-hardware-configurations]: op-guide/hardware.md#example-hardware-configurations

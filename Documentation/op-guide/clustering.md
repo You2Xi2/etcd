@@ -51,6 +51,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --initial-cluster infra0=http://10.0.1.10:2380,infra1=http://10.0.1.11:2380,infra2=http://10.0.1.12:2380 \
   --initial-cluster-state new
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -60,6 +61,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --initial-cluster infra0=http://10.0.1.10:2380,infra1=http://10.0.1.11:2380,infra2=http://10.0.1.12:2380 \
   --initial-cluster-state new
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -95,6 +97,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls https://10.0.1.10:2380 \
   --peer-client-cert-auth --peer-trusted-ca-file=ca-peer.crt \
   --peer-cert-file=/path/to/infra0-peer.crt --peer-key-file=/path/to/infra0-peer.key
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls https://10.0.1.11:2380 \
   --listen-peer-urls https://10.0.1.11:2380 \
@@ -108,6 +111,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls https://10.0.1.11:2380 \
   --peer-client-cert-auth --peer-trusted-ca-file=ca-peer.crt \
   --peer-cert-file=/path/to/infra1-peer.crt --peer-key-file=/path/to/infra1-peer.key
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls https://10.0.1.12:2380 \
   --listen-peer-urls https://10.0.1.12:2380 \
@@ -139,6 +143,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls https://10.0.1.10:2380 \
   --auto-tls \
   --peer-auto-tls
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls https://10.0.1.11:2380 \
   --listen-peer-urls https://10.0.1.11:2380 \
@@ -150,6 +155,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls https://10.0.1.11:2380 \
   --auto-tls \
   --peer-auto-tls
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls https://10.0.1.12:2380 \
   --listen-peer-urls https://10.0.1.12:2380 \
@@ -227,7 +233,7 @@ Moreover, discovery URLs should ONLY be used for the initial bootstrapping of a 
 Discovery uses an existing cluster to bootstrap itself. If using a private etcd cluster, create a URL like so:
 
 ```
-$ curl -X PUT https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83/_config/size -d value=3
+curl -X PUT https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83/_config/size -d value=3
 ```
 
 By setting the size key to the URL, a discovery URL is created with an expected cluster size of 3.
@@ -245,6 +251,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --advertise-client-urls http://10.0.1.10:2379 \
   --discovery https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -252,6 +259,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --advertise-client-urls http://10.0.1.11:2379 \
   --discovery https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -292,6 +300,7 @@ $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
   --advertise-client-urls http://10.0.1.10:2379 \
   --discovery https://discovery.etcd.io/3e86b59982e49066c5d813af1c2e2579cbf573de
 ```
+
 ```
 $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --listen-peer-urls http://10.0.1.11:2380 \
@@ -299,6 +308,7 @@ $ etcd --name infra1 --initial-advertise-peer-urls http://10.0.1.11:2380 \
   --advertise-client-urls http://10.0.1.11:2379 \
   --discovery https://discovery.etcd.io/3e86b59982e49066c5d813af1c2e2579cbf573de
 ```
+
 ```
 $ etcd --name infra2 --initial-advertise-peer-urls http://10.0.1.12:2380 \
   --listen-peer-urls http://10.0.1.12:2380 \
@@ -314,7 +324,6 @@ Use the environment variable `ETCD_DISCOVERY_PROXY` to cause etcd to use an HTTP
 #### Error and warning cases
 
 ##### Discovery server errors
-
 
 ```
 $ etcd --name infra0 --initial-advertise-peer-urls http://10.0.1.10:2380 \
@@ -394,7 +403,7 @@ infra2.example.com.  300  IN  A  10.0.1.12
 etcd cluster members can advertise domain names or IP address, the bootstrap process will resolve DNS A records.
 Since 3.2 (3.1 prints warnings) `--listen-peer-urls` and `--listen-client-urls` will reject domain name for the network interface binding.
 
-The resolved address in `--initial-advertise-peer-urls` *must match* one of the resolved addresses in the SRV targets. The etcd member reads the resolved address to find out if it belongs to the cluster defined in the SRV records.
+The resolved address in `--initial-advertise-peer-urls` _must match_ one of the resolved addresses in the SRV targets. The etcd member reads the resolved address to find out if it belongs to the cluster defined in the SRV records.
 
 ```
 $ etcd --name infra0 \
@@ -482,8 +491,8 @@ To setup an etcd cluster with proxies of v2 API, please read the the [clustering
 [rfc-srv]: http://www.ietf.org/rfc/rfc2052.txt
 [runtime-conf]: runtime-configuration.md
 [runtime-reconf-design]: runtime-reconf-design.md
-[proxy]: https://github.com/coreos/etcd/blob/release-2.3/Documentation/proxy.md
-[clustering_etcd2]: https://github.com/coreos/etcd/blob/release-2.3/Documentation/clustering.md
+[proxy]: https://go.etcd.io/etcd/blob/release-2.3/Documentation/proxy.md
+[clustering_etcd2]: https://go.etcd.io/etcd/blob/release-2.3/Documentation/clustering.md
 [security-guide]: security.md
 [security-guide-dns-srv]: security.md#notes-for-dns-srv
 [tls-setup]: ../../hack/tls-setup

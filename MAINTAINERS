@@ -1,10 +1,16 @@
-# This is the official list of etcd maintainers.
+# This is the official list of etcd maintainers
+
 #
-# Names should be added to this file like so:
-#     Individual's name <submission email address> (@GITHUB_HANDLE) pkg:*
-#     Individual's name <submission email address> <email2> <emailN> (@GITHUB_HANDLE) pkg:*
+
+# Names should be added to this file like so
+
+# Individual's name <submission email address> (@GITHUB_HANDLE) pkg:*
+
+# Individual's name <submission email address> <email2> <emailN> (@GITHUB_HANDLE) pkg:*
+
 #
-# Please keep the list sorted.
+
+# Please keep the list sorted
 
 Anthony Romano <romanoanthony061@gmail.com> (@heyitsanthony) pkg:*
 Brandon Philips <bphilips@redhat.com> (@philips) pkg:*
@@ -13,4 +19,4 @@ Gyuho Lee <gyuhox@gmail.com> <gylee@redhat.com> (@gyuho) pkg:*
 Hitoshi Mitake <mitake.hitoshi@lab.ntt.co.jp> (@mitake) pkg:*
 Xiang Li <xiangli.cs@gmail.com> (@xiang90) pkg:*
 
-Ben Darnell <ben@cockroachlabs.com> (@bdarnell) pkg:github.com/coreos/etcd/raft
+Ben Darnell <ben@cockroachlabs.com> (@bdarnell) pkg:go.etcd.io/etcd/raft

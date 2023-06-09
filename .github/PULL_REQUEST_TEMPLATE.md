@@ -1,2 +1,2 @@
 
-Please read https://github.com/coreos/etcd/blob/master/CONTRIBUTING.md#contribution-flow.
+Please read <https://go.etcd.io/etcd/blob/master/CONTRIBUTING.md#contribution-flow>.

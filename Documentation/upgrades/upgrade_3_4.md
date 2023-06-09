@@ -1,16 +1,15 @@
 ## Upgrade etcd from 3.3 to 3.4
 
 In the general case, upgrading from etcd 3.3 to 3.4 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v3.3 processes and replace them with etcd v3.4 processes
- - after running all v3.4 processes, new features in v3.4 are available to the cluster
+
+- one by one, stop the etcd v3.3 processes and replace them with etcd v3.4 processes
+- after running all v3.4 processes, new features in v3.4 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
-
-
 ### Upgrade checklists
 
-**NOTE:** When [migrating from v2 with no v3 data](https://github.com/coreos/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
+**NOTE:** When [migrating from v2 with no v3 data](https://go.etcd.io/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
 
 Highlighted breaking changes in 3.4.
 
@@ -30,7 +29,7 @@ Highlighted breaking changes in 3.4.
 
 #### Deprecating `etcd --log-output` flag (now `--log-outputs`)
 
-Rename [`etcd --log-output` to `--log-outputs`](https://github.com/coreos/etcd/pull/9624) to support multiple log outputs. **`etcd --logger=capnslog` does not support multiple log outputs.**
+Rename [`etcd --log-output` to `--log-outputs`](https://go.etcd.io/etcd/pull/9624) to support multiple log outputs. **`etcd --logger=capnslog` does not support multiple log outputs.**
 
 **`etcd --log-output`** will be deprecated in v3.5. **`etcd --logger=capnslog` will be deprecated in v3.5**.
 
@@ -57,10 +56,10 @@ Now that `log-outputs` (old field name `log-output`) accepts multiple writers, e
 
 #### Renamed `embed.Config.LogOutput` to `embed.Config.LogOutputs`
 
-Renamed [**`embed.Config.LogOutput`** to **`embed.Config.LogOutputs`**](https://github.com/coreos/etcd/pull/9624) to support multiple log outputs. And changed [`embed.Config.LogOutput` type from `string` to `[]string`](https://github.com/coreos/etcd/pull/9579) to support multiple log outputs.
+Renamed [**`embed.Config.LogOutput`** to **`embed.Config.LogOutputs`**](https://go.etcd.io/etcd/pull/9624) to support multiple log outputs. And changed [`embed.Config.LogOutput` type from `string` to `[]string`](https://go.etcd.io/etcd/pull/9579) to support multiple log outputs.
 
 ```diff
-import "github.com/coreos/etcd/embed"
+import "go.etcd.io/etcd/embed"
 
 cfg := &embed.Config{Debug: false}
 -cfg.LogOutput = "stderr"
@@ -76,7 +75,7 @@ cfg := &embed.Config{Debug: false}
 Deprecated `pkg/transport.TLSInfo.CAFile` field.
 
 ```diff
-import "github.com/coreos/etcd/pkg/transport"
+import "go.etcd.io/etcd/pkg/transport"
 
 tlsInfo := transport.TLSInfo{
     CertFile: "/tmp/test-certs/test.pem",
@@ -95,7 +94,7 @@ if err != nil {
 To be consistent with the flag name `etcd --snapshot-count`, `embed.Config.SnapCount` field has been renamed to `embed.Config.SnapshotCount`:
 
 ```diff
-import "github.com/coreos/etcd/embed"
+import "go.etcd.io/etcd/embed"
 
 cfg := embed.NewConfig()
 -cfg.SnapCount = 100000
@@ -107,7 +106,7 @@ cfg := embed.NewConfig()
 To be consistent with the flag name `etcd --snapshot-count`, `etcdserver.ServerConfig.SnapCount` field has been renamed to `etcdserver.ServerConfig.SnapshotCount`:
 
 ```diff
-import "github.com/coreos/etcd/etcdserver"
+import "go.etcd.io/etcd/etcdserver"
 
 srvcfg := etcdserver.ServerConfig{
 -  SnapCount: 100000,
@@ -119,7 +118,7 @@ srvcfg := etcdserver.ServerConfig{
 Changed `wal` function signatures to support structured logger.
 
 ```diff
-import "github.com/coreos/etcd/wal"
+import "go.etcd.io/etcd/wal"
 +import "go.uber.org/zap"
 
 +lg, _ = zap.NewProduction()
@@ -142,7 +141,7 @@ import "github.com/coreos/etcd/wal"
 `embed.Config.SetupLogging` has been removed in order to prevent wrong logging configuration, and now set up automatically.
 
 ```diff
-import "github.com/coreos/etcd/embed"
+import "go.etcd.io/etcd/embed"
 
 cfg := &embed.Config{Debug: false}
 -cfg.SetupLogging()
@@ -165,8 +164,6 @@ curl -L http://localhost:2379/v3/kv/put \
 ```
 
 Requests to `/v3beta` endpoints will redirect to `/v3`, and `/v3beta` will be removed in 3.5 release.
-
-
 
 ### Server upgrade checklists
 
@@ -383,7 +380,6 @@ Member 3:
 
 > `{"level":"info","ts":1526586949.0921423,"caller":"membership/cluster.go:473","msg":"updated cluster version","cluster-id":"7dee9ba76d59ed53","local-member-id":"b548c2511513015","from":"3.3","from":"3.4"}`
 > `{"level":"info","ts":1526586949.0922918,"caller":"api/capability.go:76","msg":"enabled capabilities for version","cluster-version":"3.4"}`
-
 
 ```bash
 endpoint health --endpoints=localhost:2379,localhost:22379,localhost:32379

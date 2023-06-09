@@ -2,7 +2,6 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Branch Management
 
 ## Guide
@@ -24,8 +23,8 @@ Before the release of the next stable version, feature PRs will be frozen. We wi
 
 ### Stable branches
 
-All branches with prefix `release-` are considered _stable_ branches.
+All branches with prefix `release-` are considered *stable* branches.
 
-After every minor release (http://semver.org/), we will have a new stable branch for that release. We will keep fixing the backwards-compatible bugs for the latest stable release, but not previous releases. The _patch_ release, incorporating any bug fixes, will be once every two weeks, given any patches.
+After every minor release (<http://semver.org/>), we will have a new stable branch for that release. We will keep fixing the backwards-compatible bugs for the latest stable release, but not previous releases. The *patch* release, incorporating any bug fixes, will be once every two weeks, given any patches.
 
-[master]: https://github.com/coreos/etcd/tree/master
+[master]: https://go.etcd.io/etcd/tree/master

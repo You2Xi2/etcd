@@ -2,7 +2,6 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Administration
 
 ## Data Directory
@@ -155,7 +154,7 @@ This example will walk you through the process of migrating the infra1 member to
 |infra2|10.0.1.12:2380|
 
 ```sh
-$ export ETCDCTL_ENDPOINT=http://10.0.1.10:2379,http://10.0.1.11:2379,http://10.0.1.12:2379
+export ETCDCTL_ENDPOINT=http://10.0.1.10:2379,http://10.0.1.11:2379,http://10.0.1.12:2379
 ```
 
 ```sh
@@ -168,21 +167,21 @@ bc1083c870280d44: name=infra2 peerURLs=http://10.0.1.12:2380 clientURLs=http://1
 #### Stop the member etcd process
 
 ```sh
-$ ssh 10.0.1.11
+ssh 10.0.1.11
 ```
 
 ```sh
-$ kill `pgrep etcd`
+kill `pgrep etcd`
 ```
 
 #### Copy the data directory of the now-idle member to the new machine
 
 ```
-$ tar -cvzf infra1.etcd.tar.gz %data_dir%
+tar -cvzf infra1.etcd.tar.gz %data_dir%
 ```
 
 ```sh
-$ scp infra1.etcd.tar.gz 10.0.1.13:~/
+scp infra1.etcd.tar.gz 10.0.1.13:~/
 ```
 
 #### Update the peer URLs for that member to reflect the new machine
@@ -195,17 +194,17 @@ $ curl http://10.0.1.10:2379/v2/members/b4db3bf5e495e255 -XPUT \
 Or use `etcdctl member update` command
 
 ```sh
-$ etcdctl member update b4db3bf5e495e255 http://10.0.1.13:2380
+etcdctl member update b4db3bf5e495e255 http://10.0.1.13:2380
 ```
 
 #### Start etcd on the new machine, using the same configuration and the copy of the data directory
 
 ```sh
-$ ssh 10.0.1.13
+ssh 10.0.1.13
 ```
 
 ```sh
-$ tar -xzvf infra1.etcd.tar.gz -C %data_dir%
+tar -xzvf infra1.etcd.tar.gz -C %data_dir%
 ```
 
 ```
@@ -275,7 +274,7 @@ You can then add more nodes to the cluster and restore resiliency. See the [add 
 
 ### Client Request Timeout
 
-etcd sets different timeouts for various types of client requests. The timeout value is not tunable now, which will be improved soon (https://github.com/coreos/etcd/issues/2038).
+etcd sets different timeouts for various types of client requests. The timeout value is not tunable now, which will be improved soon (<https://go.etcd.io/etcd/issues/2038>).
 
 #### Get requests
 
@@ -314,6 +313,6 @@ When using etcd in heavy-load scenarios on machines with multiple cores it will 
 [prometheus]: http://prometheus.io/
 [remove-a-member]: runtime-configuration.md#remove-a-member
 [runtime-reconfig]: runtime-configuration.md#cluster-reconfiguration-operations
-[snap-pkg]: http://godoc.org/github.com/coreos/etcd/snap
+[snap-pkg]: http://godoc.org/go.etcd.io/etcd/snap
 [update-a-member]: runtime-configuration.md#update-a-member
-[wal-pkg]: http://godoc.org/github.com/coreos/etcd/wal
+[wal-pkg]: http://godoc.org/go.etcd.io/etcd/wal

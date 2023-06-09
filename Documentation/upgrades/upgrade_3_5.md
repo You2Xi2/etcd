@@ -1,16 +1,15 @@
 ## Upgrade etcd from 3.4 to 3.5
 
 In the general case, upgrading from etcd 3.4 to 3.5 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v3.4 processes and replace them with etcd v3.5 processes
- - after running all v3.5 processes, new features in v3.5 are available to the cluster
+
+- one by one, stop the etcd v3.4 processes and replace them with etcd v3.5 processes
+- after running all v3.5 processes, new features in v3.5 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
-
-
 ### Upgrade checklists
 
-**NOTE:** When [migrating from v2 with no v3 data](https://github.com/coreos/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
+**NOTE:** When [migrating from v2 with no v3 data](https://go.etcd.io/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
 
 Highlighted breaking changes in 3.5.
 
@@ -32,7 +31,7 @@ TODO(add more monitoring guides); v3.4 adds `etcd --logger=zap` support for stru
 
 #### Deprecated in `etcd --log-output`
 
-v3.4 renamed [`etcd --log-output` to `--log-outputs`](https://github.com/coreos/etcd/pull/9624) to support multiple log outputs.
+v3.4 renamed [`etcd --log-output` to `--log-outputs`](https://go.etcd.io/etcd/pull/9624) to support multiple log outputs.
 
 **`etcd --log-output` has been deprecated in v3.5.**
 
@@ -78,8 +77,6 @@ curl -L http://localhost:2379/v3/kv/put \
 ```
 
 `/v3beta` has been removed in 3.5 release.
-
-
 
 ### Server upgrade checklists
 
@@ -301,7 +298,6 @@ Member 3:
 
 > `{"level":"info","ts":1526586949.0921423,"caller":"membership/cluster.go:473","msg":"updated cluster version","cluster-id":"7dee9ba76d59ed53","local-member-id":"b548c2511513015","from":"3.4","from":"3.5"}`
 > `{"level":"info","ts":1526586949.0922918,"caller":"api/capability.go:76","msg":"enabled capabilities for version","cluster-version":"3.5"}`
-
 
 ```bash
 endpoint health --endpoints=localhost:2379,localhost:22379,localhost:32379

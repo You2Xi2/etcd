@@ -2,13 +2,12 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Upgrade etcd from 2.1 to 2.2
 
 In the general case, upgrading from etcd 2.1 to 2.2 can be a zero-downtime, rolling upgrade:
 
- - one by one, stop the etcd v2.1 processes and replace them with etcd v2.2 processes
- - after you are running all v2.2 processes, new features in v2.2 are available to the cluster
+- one by one, stop the etcd v2.1 processes and replace them with etcd v2.2 processes
+- after you are running all v2.2 processes, new features in v2.2 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
@@ -48,7 +47,7 @@ Please [backup the data directory][backup-datastore] of all etcd members if you 
 
 In the example, we upgrade a three member v2.1 cluster running on local machine.
 
-#### 1. Check upgrade requirements.
+#### 1. Check upgrade requirements
 
 ```
 $ etcdctl cluster-health
@@ -134,4 +133,4 @@ $ curl http://127.0.0.1:4001/version
 
 [backup-datastore]: admin_guide.md#backing-up-the-datastore
 [downgrade]: #downgrade
-[v2.1]: https://github.com/coreos/etcd/releases/tag/v2.1.2
+[v2.1]: https://go.etcd.io/etcd/releases/tag/v2.1.2

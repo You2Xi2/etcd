@@ -19,8 +19,8 @@
 //	import (
 //		"context"
 //
-//		"github.com/coreos/etcd/embed"
-//		"github.com/coreos/etcd/etcdserver/api/v3client"
+//		"go.etcd.io/etcd/embed"
+//		"go.etcd.io/etcd/etcdserver/api/v3client"
 //	)
 //
 //	...
@@ -41,5 +41,4 @@
 //	if err != nil {
 //		// handle error!
 //	}
-//
 package v3client

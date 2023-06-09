@@ -2,7 +2,6 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Backward Compatibility
 
 The main goal of etcd 2.0 release is to improve cluster safety around bootstrapping and dynamic reconfiguration. To do this, we deprecated the old error-prone APIs and provide a new set of APIs.
@@ -13,17 +12,17 @@ The other main focus of this release was a more reliable Raft implementation, bu
 
 The major flag changes are to mostly related to bootstrapping. The `initial-*` flags provide an improved way to specify the required criteria to start the cluster. The advertised URLs now support a list of values instead of a single value, which allows etcd users to gracefully migrate to the new set of IANA-assigned ports (2379/client and 2380/peers) while maintaining backward compatibility with the old ports.
 
- - `-addr` is replaced by `-advertise-client-urls`.
- - `-bind-addr` is replaced by `-listen-client-urls`.
- - `-peer-addr` is replaced by `-initial-advertise-peer-urls`.
- - `-peer-bind-addr` is replaced by `-listen-peer-urls`.
- - `-peers` is replaced by `-initial-cluster`.
- - `-peers-file` is replaced by `-initial-cluster`.
- - `-peer-heartbeat-interval` is replaced by `-heartbeat-interval`.
- - `-peer-election-timeout` is replaced by `-election-timeout`.
+- `-addr` is replaced by `-advertise-client-urls`.
+- `-bind-addr` is replaced by `-listen-client-urls`.
+- `-peer-addr` is replaced by `-initial-advertise-peer-urls`.
+- `-peer-bind-addr` is replaced by `-listen-peer-urls`.
+- `-peers` is replaced by `-initial-cluster`.
+- `-peers-file` is replaced by `-initial-cluster`.
+- `-peer-heartbeat-interval` is replaced by `-heartbeat-interval`.
+- `-peer-election-timeout` is replaced by `-election-timeout`.
 
 The documentation of new command line flags can be found at
-https://github.com/coreos/etcd/blob/master/Documentation/v2/configuration.md.
+<https://go.etcd.io/etcd/blob/master/Documentation/v2/configuration.md>.
 
 ## Data Directory Naming
 
@@ -46,7 +45,6 @@ Reads do not provide linearizability. If you want linearizable read, you need to
 **Previous behavior**
 
 We added an option for a consistent read in the old version of etcd since etcd 0.x redirects the write request to the leader. When the user get back the result from the leader, the member it sent the request to originally might not apply the write request yet. With the consistent flag set to true, the client will always send read request to the leader. So one client should be able to see its last write when consistent=true is enabled. There is no order guarantees among different clients.
-
 
 ## Standby
 
@@ -71,7 +69,7 @@ A size key needs to be provided inside a [discovery token][discoverytoken].
 [members-api]: members_api.md
 
 ## HTTP Key Value API
+
 - The follower can now transparently proxy write requests to the leader. Clients will no longer see 307 redirections to the leader from etcd.
 
 - Expiration time is in UTC instead of local time.
-

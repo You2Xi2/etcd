@@ -2,14 +2,14 @@
 
 etcd/client is the Go client library for etcd.
 
-[![GoDoc](https://godoc.org/github.com/coreos/etcd/client?status.png)](https://godoc.org/github.com/coreos/etcd/client)
+[![GoDoc](https://godoc.org/go.etcd.io/etcd/client?status.png)](https://godoc.org/go.etcd.io/etcd/client)
 
 For full compatibility, it is recommended to vendor builds using etcd's vendored packages, using tools like `golang/dep`, as in [vendor directories](https://golang.org/cmd/go/#hdr-Vendor_Directories).
 
 ## Install
 
 ```bash
-go get github.com/coreos/etcd/client
+go get go.etcd.io/etcd/client
 ```
 
 ## Usage
@@ -18,45 +18,45 @@ go get github.com/coreos/etcd/client
 package main
 
 import (
-	"log"
-	"time"
-	"context"
+ "log"
+ "time"
+ "context"
 
-	"github.com/coreos/etcd/client"
+ "go.etcd.io/etcd/client"
 )
 
 func main() {
-	cfg := client.Config{
-		Endpoints:               []string{"http://127.0.0.1:2379"},
-		Transport:               client.DefaultTransport,
-		// set timeout per request to fail fast when the target endpoint is unavailable
-		HeaderTimeoutPerRequest: time.Second,
-	}
-	c, err := client.New(cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-	kapi := client.NewKeysAPI(c)
-	// set "/foo" key with "bar" value
-	log.Print("Setting '/foo' key with 'bar' value")
-	resp, err := kapi.Set(context.Background(), "/foo", "bar", nil)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		// print common key info
-		log.Printf("Set is done. Metadata is %q\n", resp)
-	}
-	// get "/foo" key's value
-	log.Print("Getting '/foo' key value")
-	resp, err = kapi.Get(context.Background(), "/foo", nil)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		// print common key info
-		log.Printf("Get is done. Metadata is %q\n", resp)
-		// print value
-		log.Printf("%q key has %q value\n", resp.Node.Key, resp.Node.Value)
-	}
+ cfg := client.Config{
+  Endpoints:               []string{"http://127.0.0.1:2379"},
+  Transport:               client.DefaultTransport,
+  // set timeout per request to fail fast when the target endpoint is unavailable
+  HeaderTimeoutPerRequest: time.Second,
+ }
+ c, err := client.New(cfg)
+ if err != nil {
+  log.Fatal(err)
+ }
+ kapi := client.NewKeysAPI(c)
+ // set "/foo" key with "bar" value
+ log.Print("Setting '/foo' key with 'bar' value")
+ resp, err := kapi.Set(context.Background(), "/foo", "bar", nil)
+ if err != nil {
+  log.Fatal(err)
+ } else {
+  // print common key info
+  log.Printf("Set is done. Metadata is %q\n", resp)
+ }
+ // get "/foo" key's value
+ log.Print("Getting '/foo' key value")
+ resp, err = kapi.Get(context.Background(), "/foo", nil)
+ if err != nil {
+  log.Fatal(err)
+ } else {
+  // print common key info
+  log.Printf("Get is done. Metadata is %q\n", resp)
+  // print value
+  log.Printf("%q key has %q value\n", resp.Node.Key, resp.Node.Value)
+ }
 }
 ```
 
@@ -82,24 +82,23 @@ Here is the example code to handle client errors:
 cfg := client.Config{Endpoints: []string{"http://etcd1:2379","http://etcd2:2379","http://etcd3:2379"}}
 c, err := client.New(cfg)
 if err != nil {
-	log.Fatal(err)
+ log.Fatal(err)
 }
 
 kapi := client.NewKeysAPI(c)
 resp, err := kapi.Set(ctx, "test", "bar", nil)
 if err != nil {
-	if err == context.Canceled {
-		// ctx is canceled by another routine
-	} else if err == context.DeadlineExceeded {
-		// ctx is attached with a deadline and it exceeded
-	} else if cerr, ok := err.(*client.ClusterError); ok {
-		// process (cerr.Errors)
-	} else {
-		// bad cluster endpoints, which are not etcd servers
-	}
+ if err == context.Canceled {
+  // ctx is canceled by another routine
+ } else if err == context.DeadlineExceeded {
+  // ctx is attached with a deadline and it exceeded
+ } else if cerr, ok := err.(*client.ClusterError); ok {
+  // process (cerr.Errors)
+ } else {
+  // bad cluster endpoints, which are not etcd servers
+ }
 }
 ```
-
 
 ## Caveat
 

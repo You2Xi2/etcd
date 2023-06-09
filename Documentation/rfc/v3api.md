@@ -2,37 +2,36 @@
 
 The etcd v3 API is designed to give users a more efficient and cleaner abstraction compared to etcd v2. There are a number of semantic and protocol changes in this new API. For an overview [see Xiang Li's video](https://youtu.be/J5AioGtEPeQ?t=211).
 
-To prove out the design of the v3 API the team has also built [a number of example recipes](https://github.com/coreos/etcd/tree/master/contrib/recipes), there is a [video discussing these recipes too](https://www.youtube.com/watch?v=fj-2RY-3yVU&feature=youtu.be&t=590).
+To prove out the design of the v3 API the team has also built [a number of example recipes](https://go.etcd.io/etcd/tree/master/contrib/recipes), there is a [video discussing these recipes too](https://www.youtube.com/watch?v=fj-2RY-3yVU&feature=youtu.be&t=590).
 
 # Design
 
 1. Flatten binary key-value space
-    
+
 2. Keep the event history until compaction
     - access to old version of keys
     - user controlled history compaction
-    
+
 3. Support range query
     - Pagination support with limit argument
     - Support consistency guarantee across multiple range queries
-    
+
 4. Replace TTL key with Lease
     - more efficient/ low cost keep alive
     - a logical group of TTL keys
-    
+
 5. Replace CAS/CAD with multi-object Txn
     - MUCH MORE powerful and flexible
-    
+
 6. Support efficient watching with multiple ranges
 
-7. RPC API supports the completed set of APIs. 
+7. RPC API supports the completed set of APIs.
     - more efficient than JSON/HTTP
     - additional txn/lease support
 
 8. HTTP API supports a subset of APIs.
     - easy for people to try out etcd
     - easy for people to write simple etcd application
-
 
 ## Notes
 
@@ -52,6 +51,7 @@ the size in the future a little bit or make it configurable.
 ## Examples
 
 ### Put a key (foo=bar)
+
 ```
 // A put is always successful
 Put( PutRequest { key = foo, value = bar } )
@@ -65,6 +65,7 @@ PutResponse {
 ```
 
 ### Get a key (assume we have foo=bar)
+
 ```
 Get ( RangeRequest { key = foo } )
 
@@ -86,6 +87,7 @@ RangeResponse {
 ```
 
 ### Range over a key space (assume we have foo0=bar0… foo100=bar100)
+
 ```
 Range ( RangeRequest { key = foo, end_key = foo80, limit = 30  } )
 
@@ -115,6 +117,7 @@ RangeResponse {
 ```
 
 ### Finish a txn (assume we have foo0=bar0, foo1=bar1)
+
 ```
 Txn(TxnRequest {
     // mod_revision of foo0 is equal to 1, mod_revision of foo1 is greater than 1
@@ -207,5 +210,5 @@ WatchResponse {
     
 ```
 
-[api-protobuf]: https://github.com/coreos/etcd/blob/master/etcdserver/etcdserverpb/rpc.proto
-[kv-protobuf]: https://github.com/coreos/etcd/blob/master/mvcc/mvccpb/kv.proto
+[api-protobuf]: https://go.etcd.io/etcd/blob/master/etcdserver/etcdserverpb/rpc.proto
+[kv-protobuf]: https://go.etcd.io/etcd/blob/master/mvcc/mvccpb/kv.proto

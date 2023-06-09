@@ -7,11 +7,13 @@ This document is meant to give an overview of the etcd3 API's central design. It
 Every API request sent to an etcd server is a gRPC remote procedure call. RPCs in etcd3 are categorized based on functionality into services.
 
 Services important for dealing with etcd's key space include:
+
 * KV - Creates, updates, fetches, and deletes key-value pairs.
 * Watch - Monitors changes to keys.
 * Lease - Primitives for consuming client keep-alive messages.
 
 Services which manage the cluster itself include:
+
 * Auth - Role based authentication mechanism for authenticating users.
 * Cluster - Provides membership information and configuration facilities.
 * Maintenance - Takes recovery snapshots, defragments the store, and returns per-member status information.
@@ -79,7 +81,6 @@ message KeyValue {
 * Mod_Revision - revision of the last modification on the key.
 * Lease - the ID of the lease attached to the key. If lease is 0, then no lease is attached to the key.
 
-
 In addition to just the key and value, etcd attaches additional revision metadata as part of the key message. This revision information orders keys by time of creation and modification, which is useful for managing concurrency for distributed synchronization. The etcd client's [distributed shared locks][locks] use the creation revision to wait for lock ownership. Similarly, the modification revision is used for detecting [software transactional memory][STM] read set conflicts and waiting on [leader election][elections] updates.
 
 #### Revisions
@@ -103,16 +104,16 @@ Keys are fetched from the key-value store using the `Range` API call, which take
 ```protobuf
 message RangeRequest {
   enum SortOrder {
-	NONE = 0; // default, no sorting
-	ASCEND = 1; // lowest target value first
-	DESCEND = 2; // highest target value first
+ NONE = 0; // default, no sorting
+ ASCEND = 1; // lowest target value first
+ DESCEND = 2; // highest target value first
   }
   enum SortTarget {
-	KEY = 0;
-	VERSION = 1;
-	CREATE = 2;
-	MOD = 3;
-	VALUE = 4;
+ KEY = 0;
+ VERSION = 1;
+ CREATE = 2;
+ MOD = 3;
+ VALUE = 4;
   }
 
   bytes key = 1;
@@ -348,6 +349,7 @@ message Event {
 Watches are long-running requests and use gRPC streams to stream event data. A watch stream is bi-directional; the client writes to the stream to establish watches and reads to receive watch events. A single watch stream can multiplex many distinct watches by tagging events with per-watch identifiers. This multiplexing helps reducing the memory footprint and connection overhead on the core etcd cluster.
 
 Watches make three guarantees about events:
+
 * Ordered - events are ordered by revision; an event will never appear on a watch if it precedes an event in time that has already been posted.
 * Reliable - a sequence of events will never drop any subsequence of events; if there are events ordered in time as a < b < c, then if the watch receives events a and c, it is guaranteed to receive b.
 * Atomic - a list of events is guaranteed to encompass complete revisions; updates in the same revision over multiple keys will not be split over several lists of events.
@@ -472,10 +474,10 @@ message LeaseKeepAliveResponse {
 * ID - the lease that was refreshed with a new TTL.
 * TTL - the new time-to-live, in seconds, that the lease has remaining.
 
-[elections]: https://github.com/coreos/etcd/blob/master/clientv3/concurrency/election.go
-[kv-proto]: https://github.com/coreos/etcd/blob/master/mvcc/mvccpb/kv.proto
+[elections]: https://go.etcd.io/etcd/blob/master/clientv3/concurrency/election.go
+[kv-proto]: https://go.etcd.io/etcd/blob/master/mvcc/mvccpb/kv.proto
 [grpc-api]: ../dev-guide/api_reference_v3.md
-[grpc-service]: https://github.com/coreos/etcd/blob/master/etcdserver/etcdserverpb/rpc.proto
-[locks]: https://github.com/coreos/etcd/blob/master/clientv3/concurrency/mutex.go
+[grpc-service]: https://go.etcd.io/etcd/blob/master/etcdserver/etcdserverpb/rpc.proto
+[locks]: https://go.etcd.io/etcd/blob/master/clientv3/concurrency/mutex.go
 [mvcc]: https://en.wikipedia.org/wiki/Multiversion_concurrency_control
-[stm]: https://github.com/coreos/etcd/blob/master/clientv3/concurrency/stm.go
+[stm]: https://go.etcd.io/etcd/blob/master/clientv3/concurrency/stm.go

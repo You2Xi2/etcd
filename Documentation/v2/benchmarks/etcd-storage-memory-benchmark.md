@@ -2,7 +2,6 @@
 
 [v3-docs]: ../../docs.md#documentation
 
-
 # Storage Memory Usage Benchmark
 
 <!---todo: link storage to storage design doc-->
@@ -54,7 +53,8 @@ The graph shows the detailed structure of the in-memory index B-tree.
 ## Testing Environment
 
 etcd version
-- git head https://github.com/coreos/etcd/commit/776e9fb7be7eee5e6b58ab977c8887b4fe4d48db
+
+- git head <https://go.etcd.io/etcd/commit/776e9fb7be7eee5e6b58ab977c8887b4fe4d48db>
 
 GCE n1-standard-2 machine type
 
@@ -78,7 +78,6 @@ We calculate the memory usage consumption via the Go runtime.ReadMemStats. We ca
 | 1M   | 1        | 256bytes | 409MB        |
 | 1M   | 5        | 256bytes | 506MB        |
 
-
 Based on the result, we can calculate `c1=120bytes`, `c2=30bytes`. We only need two sets of data to calculate `c1` and `c2`, since they are the only unknown variable in the formula. The `c1=120bytes` and `c2=30bytes` are the average value of the 4 sets of `c1` and `c2` we calculated. The key metadata overhead is still relatively nontrivial (50%) for small key-value pairs. However, this is a significant improvement over the old store, which had at least 1000% overhead.
 
 ## Overall memory usage
@@ -100,4 +99,3 @@ Based on the result, we know the value size does not significantly impact the me
 
 [btree]: https://en.wikipedia.org/wiki/B-tree
 [pagecache]: https://en.wikipedia.org/wiki/Page_cache
-

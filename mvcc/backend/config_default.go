@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !linux && !windows
 // +build !linux,!windows
 
 package backend
 
-import bolt "github.com/coreos/bbolt"
+import bolt "go.etcd.io/bbolt"
 
 var boltOpenOptions *bolt.Options = nil
 

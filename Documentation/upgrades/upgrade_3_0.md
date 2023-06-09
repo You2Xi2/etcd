@@ -1,18 +1,19 @@
 ## Upgrade etcd from 2.3 to 3.0
 
 In the general case, upgrading from etcd 2.3 to 3.0 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v2.3 processes and replace them with etcd v3.0 processes
- - after running all v3.0 processes, new features in v3.0 are available to the cluster
+
+- one by one, stop the etcd v2.3 processes and replace them with etcd v3.0 processes
+- after running all v3.0 processes, new features in v3.0 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
 ### Upgrade checklists
 
-**NOTE:** When [migrating from v2 with no v3 data](https://github.com/coreos/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
+**NOTE:** When [migrating from v2 with no v3 data](https://go.etcd.io/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
 
 #### Upgrade requirements
 
-To upgrade an existing etcd deployment to 3.0, the running cluster must be 2.3 or greater. If it's before 2.3, please upgrade to [2.3](https://github.com/coreos/etcd/releases/tag/v2.3.8) before upgrading to 3.0.
+To upgrade an existing etcd deployment to 3.0, the running cluster must be 2.3 or greater. If it's before 2.3, please upgrade to [2.3](https://go.etcd.io/etcd/releases/tag/v2.3.8) before upgrading to 3.0.
 
 Also, to ensure a smooth rolling upgrade, the running cluster must be healthy. Check the health of the cluster by using the `etcdctl cluster-health` command before proceeding.
 
@@ -42,7 +43,7 @@ Please [backup the data directory](../v2/admin_guide.md#backing-up-the-datastore
 
 This example details the upgrade of a three-member v2.3 ectd cluster running on a local machine.
 
-#### 1. Check upgrade requirements.
+#### 1. Check upgrade requirements
 
 Is the cluster healthy and running v.2.3.x?
 
@@ -92,7 +93,6 @@ member 8211f1d0f64f3269 is healthy: got healthy result from http://localhost:123
 cluster is healthy
 ```
 
-
 Upgraded members will log warnings like the following until the entire cluster is upgraded. This is expected and will cease after all etcd cluster members are upgraded to v3.0:
 
 ```
@@ -120,12 +120,12 @@ $ ETCDCTL_API=3 etcdctl endpoint health
 
 ## Further considerations
 
-- etcdctl environment variables have been updated. If `ETCDCTL_API=2 etcdctl cluster-health` works properly but `ETCDCTL_API=3 etcdctl endpoints health` responds with `Error:  grpc: timed out when dialing`, be sure to use the [new variable names](https://github.com/coreos/etcd/tree/master/etcdctl#etcdctl).
+- etcdctl environment variables have been updated. If `ETCDCTL_API=2 etcdctl cluster-health` works properly but `ETCDCTL_API=3 etcdctl endpoints health` responds with `Error:  grpc: timed out when dialing`, be sure to use the [new variable names](https://go.etcd.io/etcd/tree/master/etcdctl#etcdctl).
 
 ## Known Issues
 
-- etcd &lt; v3.1 does not work properly if built with Go &gt; v1.7. See [Issue 6951](https://github.com/coreos/etcd/issues/6951) for additional information.
+- etcd &lt; v3.1 does not work properly if built with Go &gt; v1.7. See [Issue 6951](https://go.etcd.io/etcd/issues/6951) for additional information.
 - If an error such as `transport: http2Client.notifyError got notified that the client transport was broken unexpected EOF.` shows up in the etcd server logs, be sure etcd is a pre-built release or built with (etcd v3.1+ &amp; go v1.7+) or (etcd &lt;v3.1 &amp; go v1.6.x).
-- Adding a v3 node to v2.3 cluster during upgrades is not supported and could trigger panics. See [Issue 7249](https://github.com/coreos/etcd/issues/7429) for additional information. Mixed versions of etcd members are only allowed during v3 migration. Finish upgrades before making any membership changes.
+- Adding a v3 node to v2.3 cluster during upgrades is not supported and could trigger panics. See [Issue 7249](https://go.etcd.io/etcd/issues/7429) for additional information. Mixed versions of etcd members are only allowed during v3 migration. Finish upgrades before making any membership changes.
 
 [etcd-contact]: https://groups.google.com/forum/#!forum/etcd-dev

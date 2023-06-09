@@ -26,8 +26,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/etcd/clientv3/balancer"
-	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/clientv3/balancer"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

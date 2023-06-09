@@ -1,14 +1,15 @@
 ## Upgrade etcd from 3.1 to 3.2
 
 In the general case, upgrading from etcd 3.1 to 3.2 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v3.1 processes and replace them with etcd v3.2 processes
- - after running all v3.2 processes, new features in v3.2 are available to the cluster
+
+- one by one, stop the etcd v3.1 processes and replace them with etcd v3.2 processes
+- after running all v3.2 processes, new features in v3.2 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
 ### Upgrade checklists
 
-**NOTE:** When [migrating from v2 with no v3 data](https://github.com/coreos/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
+**NOTE:** When [migrating from v2 with no v3 data](https://go.etcd.io/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
 
 Highlighted breaking changes in 3.2.
 
@@ -16,7 +17,7 @@ Highlighted breaking changes in 3.2.
 
 Higher `--snapshot-count` holds more Raft entries in memory until snapshot, thus causing [recurrent higher memory usage](https://github.com/kubernetes/kubernetes/issues/60589#issuecomment-371977156). Since leader retains latest Raft entries for longer, a slow follower has more time to catch up before leader snapshot. `--snapshot-count` is a tradeoff between higher memory usage and better availabilities of slow followers.
 
-Since v3.2, the default value of `--snapshot-count` has [changed from from 10,000 to 100,000](https://github.com/coreos/etcd/pull/7160).
+Since v3.2, the default value of `--snapshot-count` has [changed from from 10,000 to 100,000](https://go.etcd.io/etcd/pull/7160).
 
 #### Changed gRPC dependency (>=3.2.10)
 
@@ -29,14 +30,14 @@ Since v3.2, the default value of `--snapshot-count` has [changed from from 10,00
 Before
 
 ```go
-import "github.com/coreos/etcd/clientv3"
+import "go.etcd.io/etcd/clientv3"
 clientv3.SetLogger(log.New(os.Stderr, "grpc: ", 0))
 ```
 
 After
 
 ```go
-import "github.com/coreos/etcd/clientv3"
+import "go.etcd.io/etcd/clientv3"
 import "google.golang.org/grpc/grpclog"
 clientv3.SetLogger(grpclog.NewLoggerV2(os.Stderr, os.Stderr, os.Stderr))
 
@@ -45,7 +46,7 @@ clientv3.SetLogger(grpclog.NewLoggerV2(os.Stderr, os.Stderr, os.Stderr))
 
 ##### Deprecated `grpc.ErrClientConnTimeout`
 
-Previously, `grpc.ErrClientConnTimeout` error is returned on client dial time-outs. 3.2 instead returns `context.DeadlineExceeded` (see [#8504](https://github.com/coreos/etcd/issues/8504)).
+Previously, `grpc.ErrClientConnTimeout` error is returned on client dial time-outs. 3.2 instead returns `context.DeadlineExceeded` (see [#8504](https://go.etcd.io/etcd/issues/8504)).
 
 Before
 
@@ -56,7 +57,7 @@ _, err := clientv3.New(clientv3.Config{
     DialTimeout: 2 * time.Second
 })
 if err == grpc.ErrClientConnTimeout {
-	// handle errors
+ // handle errors
 }
 ```
 
@@ -68,7 +69,7 @@ _, err := clientv3.New(clientv3.Config{
     DialTimeout: 2 * time.Second
 })
 if err == context.DeadlineExceeded {
-	// handle errors
+ // handle errors
 }
 ```
 
@@ -90,8 +91,8 @@ etcdctl put foo [LARGE VALUE...]
 Or configure `embed.Config.MaxRequestBytes` field:
 
 ```go
-import "github.com/coreos/etcd/embed"
-import "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
+import "go.etcd.io/etcd/embed"
+import "go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 
 // limit requests to 5 MiB
 cfg := embed.NewConfig()
@@ -112,7 +113,7 @@ etcd --max-request-bytes 1048576
 ```
 
 ```go
-import "github.com/coreos/etcd/clientv3"
+import "go.etcd.io/etcd/clientv3"
 
 cli, _ := clientv3.New(clientv3.Config{
     Endpoints: []string{"127.0.0.1:2379"},
@@ -143,11 +144,11 @@ _, err = cli.Get(ctx, "foo", clientv3.WithPrefix())
 err.Error() == "rpc error: code = ResourceExhausted desc = grpc: received message larger than max (5240509 vs. 3145728)"
 ```
 
-**If not specified, client-side send limit defaults to 2 MiB (1.5 MiB + gRPC overhead bytes) and receive limit to `math.MaxInt32`**. Please see [clientv3 godoc](https://godoc.org/github.com/coreos/etcd/clientv3#Config) for more detail.
+**If not specified, client-side send limit defaults to 2 MiB (1.5 MiB + gRPC overhead bytes) and receive limit to `math.MaxInt32`**. Please see [clientv3 godoc](https://godoc.org/go.etcd.io/etcd/clientv3#Config) for more detail.
 
 #### Changed raw gRPC client wrappers
 
-3.2.12 or later changes the function signatures of `clientv3` gRPC client wrapper. This change was needed to support [custom `grpc.CallOption` on message size limits](https://github.com/coreos/etcd/pull/9047).
+3.2.12 or later changes the function signatures of `clientv3` gRPC client wrapper. This change was needed to support [custom `grpc.CallOption` on message size limits](https://go.etcd.io/etcd/pull/9047).
 
 Before and after
 
@@ -170,7 +171,7 @@ Before and after
 
 #### Changed `clientv3.Lease.TimeToLive` API
 
-Previously, `clientv3.Lease.TimeToLive` API returned `lease.ErrLeaseNotFound` on non-existent lease ID. 3.2 instead returns TTL=-1 in its response and no error (see [#7305](https://github.com/coreos/etcd/pull/7305)).
+Previously, `clientv3.Lease.TimeToLive` API returned `lease.ErrLeaseNotFound` on non-existent lease ID. 3.2 instead returns TTL=-1 in its response and no error (see [#7305](https://go.etcd.io/etcd/pull/7305)).
 
 Before
 
@@ -197,14 +198,14 @@ err == nil
 Before
 
 ```go
-import "github.com/coreos/etcd/clientv3"
+import "go.etcd.io/etcd/clientv3"
 clientv3.NewFromConfigFile
 ```
 
 After
 
 ```go
-import clientv3yaml "github.com/coreos/etcd/clientv3/yaml"
+import clientv3yaml "go.etcd.io/etcd/clientv3/yaml"
 clientv3yaml.NewConfig
 ```
 
@@ -212,7 +213,7 @@ clientv3yaml.NewConfig
 
 3.2 now rejects domains names for `--listen-peer-urls` and `--listen-client-urls` (3.1 only prints out warnings), since domain name is invalid for network interface binding. Make sure that those URLs are properly formated as `scheme://IP:port`.
 
-See [issue #6336](https://github.com/coreos/etcd/issues/6336) for more contexts.
+See [issue #6336](https://go.etcd.io/etcd/issues/6336) for more contexts.
 
 ### Server upgrade checklists
 
@@ -289,7 +290,7 @@ When each etcd process is stopped, expected errors will be logged by other clust
 It's a good idea at this point to [backup the etcd data](../op-guide/maintenance.md#snapshot-backup) to provide a downgrade path should any problems occur:
 
 ```
-$ etcdctl snapshot save backup.db
+etcdctl snapshot save backup.db
 ```
 
 #### 3. Drop-in etcd v3.2 binary and start the new etcd process

@@ -48,7 +48,7 @@ import (
 	"google.golang.org/grpc/keepalive"
 )
 
-var plog = capnslog.NewPackageLogger("github.com/coreos/etcd", "embed")
+var plog = capnslog.NewPackageLogger("go.etcd.io/etcd", "embed")
 
 const (
 	// internal fd usage includes disk usage and transport usage.
@@ -345,7 +345,7 @@ func stopServers(ctx context.Context, ss *servers) {
 
 	// do not grpc.Server.GracefulStop with TLS enabled etcd server
 	// See https://github.com/grpc/grpc-go/issues/1384#issuecomment-317124531
-	// and https://github.com/coreos/etcd/issues/8916
+	// and https://go.etcd.io/etcd/issues/8916
 	if ss.secure {
 		shutdownNow()
 		return

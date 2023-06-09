@@ -2,7 +2,6 @@
 
 [v3-docs]: ../docs.md#documentation
 
-
 # Proxy
 
 etcd can run as a transparent proxy. Doing so allows for easy discovery of etcd within your infrastructure, since it can run on each machine as a local service. In this mode, etcd acts as a reverse proxy and forwards client requests to an active etcd cluster. The etcd proxy does not participate in the consensus replication of the etcd cluster, thus it neither increases the resilience nor decreases the write performance of the etcd cluster.
@@ -24,16 +23,16 @@ While etcd proxies therefore do not need to be given the `advertise-client-urls`
 To summarize etcd proxy startup and peer discovery:
 
 1. etcd proxies execute the following steps in order until the cluster *peer-urls* are known:
-	1. If `discovery` is set for the proxy, ask the given discovery service for
-	   the *peer-urls*. The *peer-urls* will be the combined
-	   `initial-advertise-peer-urls` of all first-order, non-proxy cluster
-	   members.
-	2. If `discovery-srv` is set for the proxy, the *peer-urls* are discovered
-	   from DNS.
-	3. If `initial-cluster` is set for the proxy, that will become the value of
-	   *peer-urls*.
-	4. Otherwise use the default value of
-	   `http://localhost:2380,http://localhost:7001`.
+ 1. If `discovery` is set for the proxy, ask the given discovery service for
+    the *peer-urls*. The *peer-urls* will be the combined
+    `initial-advertise-peer-urls` of all first-order, non-proxy cluster
+    members.
+ 2. If `discovery-srv` is set for the proxy, the *peer-urls* are discovered
+    from DNS.
+ 3. If `initial-cluster` is set for the proxy, that will become the value of
+    *peer-urls*.
+ 4. Otherwise use the default value of
+    `http://localhost:2380,http://localhost:7001`.
 2. These *peer-urls* are used to contact the (non-proxy) members of the cluster
    to find their *client-urls*. The *client-urls* will thus be the combined
    `advertise-client-urls` of all cluster members (i.e. non-proxies).
@@ -43,6 +42,7 @@ To summarize etcd proxy startup and peer discovery:
 Always start the first-order etcd cluster members first, then any proxies. A proxy must be able to reach the cluster members to retrieve its configuration, and will attempt connections somewhat aggressively in the absence of such a channel. Starting the members before any proxy ensures the proxy can discover the client URLs when it later starts.
 
 ## Using an etcd proxy
+
 To start etcd in proxy mode, you need to provide three flags: `proxy`, `listen-client-urls`, and `initial-cluster` (or `discovery`).
 
 To start a readwrite proxy, set `-proxy on`; To start a readonly proxy, set `-proxy readonly`.
@@ -50,6 +50,7 @@ To start a readwrite proxy, set `-proxy on`; To start a readonly proxy, set `-pr
 The proxy will be listening on `listen-client-urls` and forward requests to the etcd cluster discovered from in `initial-cluster` or `discovery` url.
 
 ### Start an etcd proxy with a static configuration
+
 To start a proxy that will connect to a statically defined etcd cluster, specify the `initial-cluster` flag:
 
 ```
@@ -59,6 +60,7 @@ etcd --proxy on \
 ```
 
 ### Start an etcd proxy with the discovery service
+
 If you bootstrap an etcd cluster using the [discovery service][discovery-service], you can also start the proxy with the same `discovery`.
 
 To start a proxy using the discovery service, specify the `discovery` flag. The proxy will wait until the etcd cluster defined at the `discovery` url finishes bootstrapping, and then start to forward the requests.
@@ -154,5 +156,5 @@ If an error occurs, check the [add member troubleshooting doc][runtime-configura
 
 [discovery-service]: clustering.md#discovery
 [goreman]: https://github.com/mattn/goreman
-[procfile]: https://github.com/coreos/etcd/blob/master/Procfile.v2
+[procfile]: https://go.etcd.io/etcd/blob/master/Procfile.v2
 [runtime-configuration]: runtime-configuration.md#error-cases-when-adding-members

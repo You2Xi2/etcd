@@ -1,14 +1,15 @@
 ## Upgrade etcd from 3.0 to 3.1
 
 In the general case, upgrading from etcd 3.0 to 3.1 can be a zero-downtime, rolling upgrade:
- - one by one, stop the etcd v3.0 processes and replace them with etcd v3.1 processes
- - after running all v3.1 processes, new features in v3.1 are available to the cluster
+
+- one by one, stop the etcd v3.0 processes and replace them with etcd v3.1 processes
+- after running all v3.1 processes, new features in v3.1 are available to the cluster
 
 Before [starting an upgrade](#upgrade-procedure), read through the rest of this guide to prepare.
 
 ### Upgrade checklists
 
-**NOTE:** When [migrating from v2 with no v3 data](https://github.com/coreos/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
+**NOTE:** When [migrating from v2 with no v3 data](https://go.etcd.io/etcd/issues/9480), etcd server v3.2+ panics when etcd restores from existing snapshots but no v3 `ETCD_DATA_DIR/member/snap/db` file. This happens when the server had migrated from v2 with no previous v3 data. This also prevents accidental v3 data loss (e.g. `db` file might have been moved). etcd requires that post v3 migration can only happen with v3 data. Do not upgrade to newer v3 versions until v3.0 server contains v3 data.
 
 #### Monitoring
 
@@ -83,7 +84,7 @@ When each etcd process is stopped, expected errors will be logged by other clust
 It's a good idea at this point to [backup the etcd data](../op-guide/maintenance.md#snapshot-backup) to provide a downgrade path should any problems occur:
 
 ```
-$ etcdctl snapshot save backup.db
+etcdctl snapshot save backup.db
 ```
 
 #### 3. Drop-in etcd v3.1 binary and start the new etcd process

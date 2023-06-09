@@ -10,7 +10,7 @@ There are other sub-systems which impact the overall performance of etcd. Each s
 
 ## Benchmarks
 
-Benchmarking etcd performance can be done with the [benchmark](https://github.com/coreos/etcd/tree/master/tools/benchmark) CLI tool included with etcd.
+Benchmarking etcd performance can be done with the [benchmark](https://go.etcd.io/etcd/tree/master/tools/benchmark) CLI tool included with etcd.
 
 For some baseline performance numbers, we consider a three member etcd cluster with the following hardware configuration:
 
@@ -42,7 +42,7 @@ benchmark --endpoints=${HOST_1},${HOST_2},${HOST_3} --conns=100 --clients=1000 \
     put --key-size=8 --sequential-keys --total=100000 --val-size=256
 ```
 
-Linearizable read requests go through a quorum of cluster members for consensus to fetch the most recent data. Serializable read requests are cheaper than linearizable reads since they are served by any single etcd member, instead of a quorum of members, in exchange for possibly serving stale data. etcd can read: 
+Linearizable read requests go through a quorum of cluster members for consensus to fetch the most recent data. Serializable read requests are cheaper than linearizable reads since they are served by any single etcd member, instead of a quorum of members, in exchange for possibly serving stale data. etcd can read:
 
 | Number of requests | Key size in bytes | Value size in bytes | Number of connections | Number of clients | Consistency | Average read QPS | Average latency per request |
 |-------------------:|------------------:|--------------------:|----------------------:|------------------:|-------------|-----------------:|----------------------------:|

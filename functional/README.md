@@ -1,10 +1,10 @@
 ## etcd Functional Testing
 
-[`functional`](https://godoc.org/github.com/coreos/etcd/functional) verifies the correct behavior of etcd under various system and network malfunctions. It sets up an etcd cluster under high pressure loads and continuously injects failures into the cluster. Then it expects the etcd cluster to recover within a few seconds. This has been extremely helpful to find critical bugs.
+[`functional`](https://godoc.org/go.etcd.io/etcd/functional) verifies the correct behavior of etcd under various system and network malfunctions. It sets up an etcd cluster under high pressure loads and continuously injects failures into the cluster. Then it expects the etcd cluster to recover within a few seconds. This has been extremely helpful to find critical bugs.
 
-See [`rpcpb.Case`](https://godoc.org/github.com/coreos/etcd/functional/rpcpb#Case) for all failure cases.
+See [`rpcpb.Case`](https://godoc.org/go.etcd.io/etcd/functional/rpcpb#Case) for all failure cases.
 
-See [functional.yaml](https://github.com/coreos/etcd/blob/master/functional.yaml) for an example configuration.
+See [functional.yaml](https://go.etcd.io/etcd/blob/master/functional.yaml) for an example configuration.
 
 ### Run locally
 
@@ -39,16 +39,16 @@ Proxy layer that simulates various network conditions.
 Test locally
 
 ```bash
-$ ./build
-$ ./bin/etcd
+./build
+./bin/etcd
 
-$ make build-functional
+make build-functional
 
-$ ./bin/etcd-proxy --help
-$ ./bin/etcd-proxy --from localhost:23790 --to localhost:2379 --http-port 2378 --verbose
+./bin/etcd-proxy --help
+./bin/etcd-proxy --from localhost:23790 --to localhost:2379 --http-port 2378 --verbose
 
-$ ETCDCTL_API=3 ./bin/etcdctl --endpoints localhost:2379 put foo bar
-$ ETCDCTL_API=3 ./bin/etcdctl --endpoints localhost:23790 put foo bar
+ETCDCTL_API=3 ./bin/etcdctl --endpoints localhost:2379 put foo bar
+ETCDCTL_API=3 ./bin/etcdctl --endpoints localhost:23790 put foo bar
 ```
 
 Proxy overhead per request is under 500μs
@@ -67,25 +67,25 @@ $ ./bin/benchmark \
 
 <<COMMENT
 Summary:
-  Total:	8.4611 secs.
-  Slowest:	0.1324 secs.
-  Fastest:	0.0011 secs.
-  Average:	0.0121 secs.
-  Stddev:	0.0125 secs.
-  Requests/sec:	1181.8758
+  Total: 8.4611 secs.
+  Slowest: 0.1324 secs.
+  Fastest: 0.0011 secs.
+  Average: 0.0121 secs.
+  Stddev: 0.0125 secs.
+  Requests/sec: 1181.8758
 
 Response time histogram:
-  0.0011 [1]	|
-  0.0142 [7899]	|∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
-  0.0273 [1339]	|∎∎∎∎∎∎
-  0.0405 [543]	|∎∎
-  0.0536 [67]	|
-  0.0667 [49]	|
-  0.0798 [9]	|
-  0.0930 [15]	|
-  0.1061 [42]	|
-  0.1192 [21]	|
-  0.1324 [15]	|
+  0.0011 [1] |
+  0.0142 [7899] |∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+  0.0273 [1339] |∎∎∎∎∎∎
+  0.0405 [543] |∎∎
+  0.0536 [67] |
+  0.0667 [49] |
+  0.0798 [9] |
+  0.0930 [15] |
+  0.1061 [42] |
+  0.1192 [21] |
+  0.1324 [15] |
 
 Latency distribution:
   10% in 0.0049 secs.
@@ -109,25 +109,25 @@ $ ./bin/benchmark \
 
 <<COMMENT
 Summary:
-  Total:	9.1128 secs.
-  Slowest:	0.1363 secs.
-  Fastest:	0.0015 secs.
-  Average:	0.0131 secs.
-  Stddev:	0.0113 secs.
-  Requests/sec:	1097.3613
+  Total: 9.1128 secs.
+  Slowest: 0.1363 secs.
+  Fastest: 0.0015 secs.
+  Average: 0.0131 secs.
+  Stddev: 0.0113 secs.
+  Requests/sec: 1097.3613
 
 Response time histogram:
-  0.0015 [1]	|
-  0.0150 [7407]	|∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
-  0.0285 [2017]	|∎∎∎∎∎∎∎∎∎∎
-  0.0419 [440]	|∎∎
-  0.0554 [30]	|
-  0.0689 [13]	|
-  0.0824 [12]	|
-  0.0959 [48]	|
-  0.1093 [2]	|
-  0.1228 [16]	|
-  0.1363 [14]	|
+  0.0015 [1] |
+  0.0150 [7407] |∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+  0.0285 [2017] |∎∎∎∎∎∎∎∎∎∎
+  0.0419 [440] |∎∎
+  0.0554 [30] |
+  0.0689 [13] |
+  0.0824 [12] |
+  0.0959 [48] |
+  0.1093 [2] |
+  0.1228 [16] |
+  0.1363 [14] |
 
 Latency distribution:
   10% in 0.0054 secs.

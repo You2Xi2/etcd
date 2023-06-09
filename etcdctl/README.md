@@ -252,6 +252,7 @@ RPC: Txn
 - interactive -- input transaction with interactive prompting.
 
 #### Input Format
+
 ```ebnf
 <Txn> ::= <CMP>* "\n" <THEN> "\n" <ELSE> "\n"
 <CMP> ::= (<CMPCREATE>|<CMPMOD>|<CMPVAL>|<CMPVER>|<CMPLEASE>) "\n"
@@ -278,6 +279,7 @@ RPC: Txn
 #### Examples
 
 txn in interactive mode:
+
 ```bash
 ./etcdctl txn -i
 # compares:
@@ -298,6 +300,7 @@ put key2 "some extra key"
 ```
 
 txn in non-interactive mode:
+
 ```bash
 ./etcdctl txn <<<'mod("key1") > "0"
 
@@ -332,6 +335,7 @@ RPC: Compact
 Prints the compacted revision.
 
 #### Example
+
 ```bash
 ./etcdctl compaction 1234
 # compacted revision 1234
@@ -590,6 +594,7 @@ RPC: LeaseKeepAlive
 Prints a message for every keep alive sent or prints a message indicating the lease is gone.
 
 #### Example
+
 ```bash
 ./etcdctl lease keep-alive 32695410dcc0ca0
 # lease 32695410dcc0ca0 keepalived with TTL(100)
@@ -935,6 +940,7 @@ The backend snapshot is written to the given file path.
 #### Example
 
 Save a snapshot to "snapshot.db":
+
 ```
 ./etcdctl snapshot save snapshot.db
 ```
@@ -968,6 +974,7 @@ A new etcd data directory initialized with the snapshot.
 #### Example
 
 Save a snapshot, restore into a new 3 node cluster, and start the cluster:
+
 ```
 ./etcdctl snapshot save snapshot.db
 
@@ -997,6 +1004,7 @@ Prints a humanized table of the database hash, revision, total keys, and size.
 Prints a line of JSON encoding the database hash, revision, total keys, and size.
 
 #### Examples
+
 ```bash
 ./etcdctl snapshot status file.db
 # cf1550fb, 3, 3, 25 kB
@@ -1474,17 +1482,17 @@ If user does not provide a transformer program, migrate command will use the def
 
 ```go
 func transform(n *storev2.Node) *mvccpb.KeyValue {
-	if n.Dir {
-		return nil
-	}
-	kv := &mvccpb.KeyValue{
-		Key:            []byte(n.Key),
-		Value:          []byte(n.Value),
-		CreateRevision: int64(n.CreatedIndex),
-		ModRevision:    int64(n.ModifiedIndex),
-		Version:        1,
-	}
-	return kv
+ if n.Dir {
+  return nil
+ }
+ kv := &mvccpb.KeyValue{
+  Key:            []byte(n.Key),
+  Value:          []byte(n.Value),
+  CreateRevision: int64(n.CreatedIndex),
+  ModRevision:    int64(n.ModifiedIndex),
+  Version:        1,
+ }
+ return kv
 }
 ```
 
@@ -1636,10 +1644,9 @@ backward compatibility for `JSON` format and the format in non-interactive mode.
 
 ### TODO: compatibility with etcd server
 
-[etcd]: https://github.com/coreos/etcd
+[etcd]: https://go.etcd.io/etcd
 [READMEv2]: READMEv2.md
 [v2key]: ../store/node_extern.go#L28-L37
 [v3key]: ../mvcc/mvccpb/kv.proto#L12-L29
 [etcdrpc]: ../etcdserver/etcdserverpb/rpc.proto
-[storagerpc]: ../mvcc/mvccpb/kv.proto
 [member_list_rpc]: ../etcdserver/etcdserverpb/rpc.proto#L493-L497

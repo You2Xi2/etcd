@@ -49,7 +49,8 @@ The graph shows the detailed structure of the in-memory index B-tree.
 ## Testing Environment
 
 etcd version
-- git head https://github.com/coreos/etcd/commit/776e9fb7be7eee5e6b58ab977c8887b4fe4d48db
+
+- git head <https://go.etcd.io/etcd/commit/776e9fb7be7eee5e6b58ab977c8887b4fe4d48db>
 
 GCE n1-standard-2 machine type
 
@@ -60,7 +61,7 @@ GCE n1-standard-2 machine type
 
 In this test, we only benchmark the memory usage of the in-memory index. The goal is to find `c1` and `c2` mentioned above and to understand the hard limit of memory consumption of the storage.
 
-We calculate the memory usage consumption via the Go runtime.ReadMemStats. We calculate the total allocated bytes difference before creating the index and after creating the index. It cannot perfectly reflect the memory usage of the in-memory index itself but can show the rough consumption pattern. 
+We calculate the memory usage consumption via the Go runtime.ReadMemStats. We calculate the total allocated bytes difference before creating the index and after creating the index. It cannot perfectly reflect the memory usage of the in-memory index itself but can show the rough consumption pattern.
 
 | N    | versions | key size | memory usage |
 |------|----------|----------|--------------|
@@ -72,7 +73,6 @@ We calculate the memory usage consumption via the Go runtime.ReadMemStats. We ca
 | 100K | 5        | 256bytes | 65MB         |
 | 1M   | 1        | 256bytes | 409MB        |
 | 1M   | 5        | 256bytes | 506MB        |
-
 
 Based on the result, we can calculate `c1=120bytes`, `c2=30bytes`. We only need two sets of data to calculate `c1` and `c2`, since they are the only unknown variable in the formula. The `c1=120bytes` and `c2=30bytes` are the average value of the 4 sets of `c1` and `c2` we calculated. The key metadata overhead is still relatively nontrivial (50%) for small key-value pairs. However, this is a significant improvement over the old store, which had at least 1000% overhead.
 
@@ -95,4 +95,3 @@ Based on the result, we know the value size does not significantly impact the me
 
 [btree]: https://en.wikipedia.org/wiki/B-tree
 [pagecache]: https://en.wikipedia.org/wiki/Page_cache
-

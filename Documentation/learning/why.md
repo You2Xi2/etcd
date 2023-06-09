@@ -34,12 +34,12 @@ The table below is a handy quick reference for spotting the differences among et
 
 ZooKeeper solves the same problem as etcd: distributed system coordination and metadata storage. However, etcd has the luxury of hindsight taken from engineering and operational experience with ZooKeeper’s design and implementation. The lessons learned from Zookeeper certainly informed etcd’s design, helping it support large scale systems like Kubernetes. The improvements etcd made over Zookeeper include:
 
-* Dynamic cluster membership reconfiguration
-* Stable read/write under high load
-* A multi-version concurrency control data model
-* Reliable key monitoring which never silently drop events
-* Lease primitives decoupling connections from sessions
-* APIs for safe distributed shared locks
+- Dynamic cluster membership reconfiguration
+- Stable read/write under high load
+- A multi-version concurrency control data model
+- Reliable key monitoring which never silently drop events
+- Lease primitives decoupling connections from sessions
+- APIs for safe distributed shared locks
 
 Furthermore, etcd supports a wide range of languages and frameworks out of the box. Whereas Zookeeper has its own custom Jute RPC protocol, which is totally unique to Zookeeper and limits its [supported language bindings][zk-bindings], etcd’s client protocol is built from [gRPC][grpc], a popular RPC framework with language bindings for go, C++, Java, and more. Likewise, gRPC can be serialized into JSON over HTTP, so even general command line utilities like `curl` can talk to it. Since systems can select from a variety of choices, they are built on etcd with native tooling rather than around etcd with a single fixed set of technologies.
 
@@ -82,12 +82,12 @@ For distributed coordination, choosing etcd can help prevent operational headach
 [cockroach]: https://github.com/cockroachdb/cockroach
 [spanner]: https://cloud.google.com/spanner/
 [tidb]: https://github.com/pingcap/tidb
-[etcd-v3lock]: https://godoc.org/github.com/coreos/etcd/etcdserver/api/v3lock/v3lockpb
-[etcd-v3election]: https://godoc.org/github.com/coreos/etcd/etcdserver/api/v3election/v3electionpb
+[etcd-v3lock]: https://godoc.org/go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb
+[etcd-v3election]: https://godoc.org/go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb
 [etcd-etcdctl-lock]: ../../etcdctl/README.md#lock-lockname-command-arg1-arg2-
 [etcd-etcdctl-elect]: ../../etcdctl/README.md#elect-options-election-name-proposal
 [etcd-mvcc]: data_model.md
-[etcd-recipe]: https://godoc.org/github.com/coreos/etcd/contrib/recipes
+[etcd-recipe]: https://godoc.org/go.etcd.io/etcd/contrib/recipes
 [consul-lock]: https://www.consul.io/docs/commands/lock.html
 [newsql-leader]: http://dl.acm.org/citation.cfm?id=2960999
 [etcd-reconfig]: ../op-guide/runtime-configuration.md
@@ -103,7 +103,6 @@ For distributed coordination, choosing etcd can help prevent operational headach
 [etcd-watch]: api.md#watch-streams
 [zk-watch]: https://zookeeper.apache.org/doc/trunk/zookeeperProgrammers.html#ch_zkWatches
 [consul-watch]: https://www.consul.io/docs/agent/watches.html
-[etcd-commonname]: ../op-guide/authentication.md#using-tls-common-name
 [etcd-rbac]: ../op-guide/authentication.md#working-with-roles
 [zk-acl]: https://zookeeper.apache.org/doc/r3.1.2/zookeeperProgrammers.html#sc_ZooKeeperAccessControl
 [consul-acl]: https://www.consul.io/docs/internals/acl.html

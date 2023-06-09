@@ -15,6 +15,8 @@
 package mvcc
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/mvcc/backend"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -42,8 +44,8 @@ func (s *store) Read() TxnRead {
 func (tr *storeTxnRead) FirstRev() int64 { return tr.firstRev }
 func (tr *storeTxnRead) Rev() int64      { return tr.rev }
 
-func (tr *storeTxnRead) Range(key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
-	return tr.rangeKeys(key, end, tr.Rev(), ro)
+func (tr *storeTxnRead) Range(ctx context.Context, key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
+	return tr.rangeKeys(ctx, key, end, tr.Rev(), ro)
 }
 
 func (tr *storeTxnRead) End() {
@@ -74,12 +76,12 @@ func (s *store) Write() TxnWrite {
 
 func (tw *storeTxnWrite) Rev() int64 { return tw.beginRev }
 
-func (tw *storeTxnWrite) Range(key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
+func (tw *storeTxnWrite) Range(ctx context.Context, key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
 	rev := tw.beginRev
 	if len(tw.changes) > 0 {
 		rev++
 	}
-	return tw.rangeKeys(key, end, rev, ro)
+	return tw.rangeKeys(ctx, key, end, rev, ro)
 }
 
 func (tw *storeTxnWrite) DeleteRange(key, end []byte) (int64, int64) {
@@ -109,7 +111,7 @@ func (tw *storeTxnWrite) End() {
 	tw.s.mu.RUnlock()
 }
 
-func (tr *storeTxnRead) rangeKeys(key, end []byte, curRev int64, ro RangeOptions) (*RangeResult, error) {
+func (tr *storeTxnRead) rangeKeys(ctx context.Context, key, end []byte, curRev int64, ro RangeOptions) (*RangeResult, error) {
 	rev := ro.Rev
 	if rev > curRev {
 		return &RangeResult{KVs: nil, Count: -1, Rev: curRev}, ErrFutureRev
@@ -137,6 +139,11 @@ func (tr *storeTxnRead) rangeKeys(key, end []byte, curRev int64, ro RangeOptions
 	kvs := make([]mvccpb.KeyValue, limit)
 	revBytes := newRevBytes()
 	for i, revpair := range revpairs[:len(kvs)] {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
 		revToBytes(revpair, revBytes)
 		_, vs := tr.tx.UnsafeRange(keyBucketName, revBytes, nil, 0)
 		if len(vs) != 1 {

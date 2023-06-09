@@ -14,7 +14,11 @@
 
 package mvcc
 
-import "go.etcd.io/etcd/lease"
+import (
+	"context"
+
+	"go.etcd.io/etcd/lease"
+)
 
 type metricsTxnWrite struct {
 	TxnWrite
@@ -31,9 +35,9 @@ func newMetricsTxnWrite(tw TxnWrite) TxnWrite {
 	return &metricsTxnWrite{tw, 0, 0, 0}
 }
 
-func (tw *metricsTxnWrite) Range(key, end []byte, ro RangeOptions) (*RangeResult, error) {
+func (tw *metricsTxnWrite) Range(ctx context.Context, key, end []byte, ro RangeOptions) (*RangeResult, error) {
 	tw.ranges++
-	return tw.TxnWrite.Range(key, end, ro)
+	return tw.TxnWrite.Range(ctx, key, end, ro)
 }
 
 func (tw *metricsTxnWrite) DeleteRange(key, end []byte) (n, rev int64) {

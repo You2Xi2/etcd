@@ -15,6 +15,7 @@
 package mvcc
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"reflect"
@@ -44,12 +45,12 @@ type (
 
 var (
 	normalRangeFunc = func(kv KV, key, end []byte, ro RangeOptions) (*RangeResult, error) {
-		return kv.Range(key, end, ro)
+		return kv.Range(context.TODO(), key, end, ro)
 	}
 	txnRangeFunc = func(kv KV, key, end []byte, ro RangeOptions) (*RangeResult, error) {
 		txn := kv.Read()
 		defer txn.End()
-		return txn.Range(key, end, ro)
+		return txn.Range(context.TODO(), key, end, ro)
 	}
 
 	normalPutFunc = func(kv KV, key, value []byte, lease lease.LeaseID) int64 {
@@ -263,7 +264,7 @@ func testKVPutMultipleTimes(t *testing.T, f putFunc) {
 			t.Errorf("#%d: rev = %d, want %d", i, rev, base+1)
 		}
 
-		r, err := s.Range([]byte("foo"), nil, RangeOptions{})
+		r, err := s.Range(context.TODO(), []byte("foo"), nil, RangeOptions{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -367,7 +368,7 @@ func TestKVOperationInSequence(t *testing.T) {
 			t.Errorf("#%d: put rev = %d, want %d", i, rev, base+1)
 		}
 
-		r, err := s.Range([]byte("foo"), nil, RangeOptions{Rev: base + 1})
+		r, err := s.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: base + 1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -387,7 +388,7 @@ func TestKVOperationInSequence(t *testing.T) {
 			t.Errorf("#%d: n = %d, rev = %d, want (%d, %d)", i, n, rev, 1, base+2)
 		}
 
-		r, err = s.Range([]byte("foo"), nil, RangeOptions{Rev: base + 2})
+		r, err = s.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: base + 2})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -444,7 +445,7 @@ func TestKVTxnNonBlockRange(t *testing.T) {
 	donec := make(chan struct{})
 	go func() {
 		defer close(donec)
-		s.Range([]byte("foo"), nil, RangeOptions{})
+		s.Range(context.TODO(), []byte("foo"), nil, RangeOptions{})
 	}()
 	select {
 	case <-donec:
@@ -469,7 +470,7 @@ func TestKVTxnOperationInSequence(t *testing.T) {
 			t.Errorf("#%d: put rev = %d, want %d", i, rev, base+1)
 		}
 
-		r, err := txn.Range([]byte("foo"), nil, RangeOptions{Rev: base + 1})
+		r, err := txn.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: base + 1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -489,7 +490,7 @@ func TestKVTxnOperationInSequence(t *testing.T) {
 			t.Errorf("#%d: n = %d, rev = %d, want (%d, %d)", i, n, rev, 1, base+1)
 		}
 
-		r, err = txn.Range([]byte("foo"), nil, RangeOptions{Rev: base + 1})
+		r, err = txn.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: base + 1})
 		if err != nil {
 			t.Errorf("#%d: range error (%v)", i, err)
 		}
@@ -548,7 +549,7 @@ func TestKVCompactReserveLastValue(t *testing.T) {
 		if err != nil {
 			t.Errorf("#%d: unexpect compact error %v", i, err)
 		}
-		r, err := s.Range([]byte("foo"), nil, RangeOptions{Rev: tt.rev + 1})
+		r, err := s.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: tt.rev + 1})
 		if err != nil {
 			t.Errorf("#%d: unexpect range error %v", i, err)
 		}
@@ -635,7 +636,7 @@ func TestKVRestore(t *testing.T) {
 		tt(s)
 		var kvss [][]mvccpb.KeyValue
 		for k := int64(0); k < 10; k++ {
-			r, _ := s.Range([]byte("a"), []byte("z"), RangeOptions{Rev: k})
+			r, _ := s.Range(context.TODO(), []byte("a"), []byte("z"), RangeOptions{Rev: k})
 			kvss = append(kvss, r.KVs)
 		}
 
@@ -653,7 +654,7 @@ func TestKVRestore(t *testing.T) {
 		testutil.WaitSchedule()
 		var nkvss [][]mvccpb.KeyValue
 		for k := int64(0); k < 10; k++ {
-			r, _ := ns.Range([]byte("a"), []byte("z"), RangeOptions{Rev: k})
+			r, _ := ns.Range(context.TODO(), []byte("a"), []byte("z"), RangeOptions{Rev: k})
 			nkvss = append(nkvss, r.KVs)
 		}
 		cleanup(ns, b, tmpPath)
@@ -697,7 +698,7 @@ func TestKVSnapshot(t *testing.T) {
 
 	ns := NewStore(zap.NewExample(), b, &lease.FakeLessor{}, nil)
 	defer ns.Close()
-	r, err := ns.Range([]byte("a"), []byte("z"), RangeOptions{})
+	r, err := ns.Range(context.TODO(), []byte("a"), []byte("z"), RangeOptions{})
 	if err != nil {
 		t.Errorf("unexpect range error (%v)", err)
 	}

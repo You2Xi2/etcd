@@ -15,6 +15,8 @@
 package mvcc
 
 import (
+	"context"
+
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/mvcc/backend"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -49,7 +51,7 @@ type ReadView interface {
 	// If `end` is not nil and empty, it gets the keys greater than or equal to key.
 	// Limit limits the number of keys returned.
 	// If the required rev is compacted, ErrCompacted will be returned.
-	Range(key, end []byte, ro RangeOptions) (r *RangeResult, err error)
+	Range(ctx context.Context, key, end []byte, ro RangeOptions) (r *RangeResult, err error)
 }
 
 // TxnRead represents a read-only transaction with operations that will not

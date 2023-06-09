@@ -14,7 +14,11 @@
 
 package mvcc
 
-import "go.etcd.io/etcd/lease"
+import (
+	"context"
+
+	"go.etcd.io/etcd/lease"
+)
 
 type readView struct{ kv KV }
 
@@ -30,10 +34,10 @@ func (rv *readView) Rev() int64 {
 	return tr.Rev()
 }
 
-func (rv *readView) Range(key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
+func (rv *readView) Range(ctx context.Context, key, end []byte, ro RangeOptions) (r *RangeResult, err error) {
 	tr := rv.kv.Read()
 	defer tr.End()
-	return tr.Range(key, end, ro)
+	return tr.Range(ctx, key, end, ro)
 }
 
 type writeView struct{ kv KV }

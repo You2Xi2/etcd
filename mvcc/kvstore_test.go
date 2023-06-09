@@ -15,6 +15,7 @@
 package mvcc
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/binary"
 	"fmt"
@@ -209,7 +210,7 @@ func TestStoreRange(t *testing.T) {
 		b.tx.rangeRespc <- tt.r
 		fi.indexRangeRespc <- tt.idxr
 
-		ret, err := s.Range([]byte("foo"), []byte("goo"), ro)
+		ret, err := s.Range(context.TODO(), []byte("foo"), []byte("goo"), ro)
 		if err != nil {
 			t.Errorf("#%d: err = %v, want nil", i, err)
 		}
@@ -451,7 +452,7 @@ func TestRestoreDelete(t *testing.T) {
 	defer s.Close()
 	for i := 0; i < 20; i++ {
 		ks := fmt.Sprintf("foo-%d", i)
-		r, err := s.Range([]byte(ks), nil, RangeOptions{})
+		r, err := s.Range(context.TODO(), []byte(ks), nil, RangeOptions{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -489,7 +490,7 @@ func TestRestoreContinueUnfinishedCompaction(t *testing.T) {
 	// wait for scheduled compaction to be finished
 	time.Sleep(100 * time.Millisecond)
 
-	if _, err := s1.Range([]byte("foo"), nil, RangeOptions{Rev: 1}); err != ErrCompacted {
+	if _, err := s1.Range(context.TODO(), []byte("foo"), nil, RangeOptions{Rev: 1}); err != ErrCompacted {
 		t.Errorf("range on compacted rev error = %v, want %v", err, ErrCompacted)
 	}
 	// check the key in backend is deleted

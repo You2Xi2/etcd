@@ -27,6 +27,7 @@ import (
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/lease/leasehttp"
 	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/pkg/traceutil"
 	"go.etcd.io/etcd/raft"
 
 	"github.com/gogo/protobuf/proto"
@@ -86,10 +87,14 @@ type Authenticator interface {
 }
 
 func (s *EtcdServer) Range(ctx context.Context, r *pb.RangeRequest) (*pb.RangeResponse, error) {
+	trace := traceutil.New("Range")
+	ctx = context.WithValue(ctx, "trace", trace)
+
 	defer warnOfExpensiveReadOnlyRangeRequest(s.getLogger(), time.Now(), r)
 
 	if !r.Serializable {
 		err := s.linearizableReadNotify(ctx)
+		trace.Step("Agreement among raft nodes before linearized reading.")
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +105,7 @@ func (s *EtcdServer) Range(ctx context.Context, r *pb.RangeRequest) (*pb.RangeRe
 		return s.authStore.IsRangePermitted(ai, r.Key, r.RangeEnd)
 	}
 
-	get := func() { resp, err = s.applyV3Base.Range(nil, r) }
+	get := func() { resp, err = s.applyV3Base.Range(ctx, nil, r) }
 	if serr := s.doSerialize(ctx, chk, get); serr != nil {
 		return nil, serr
 	}

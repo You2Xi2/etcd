@@ -20,6 +20,7 @@ import (
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/mvcc/backend"
 	"go.etcd.io/etcd/mvcc/mvccpb"
+	"go.etcd.io/etcd/pkg/traceutil"
 	"go.uber.org/zap"
 )
 
@@ -29,16 +30,18 @@ type storeTxnRead struct {
 
 	firstRev int64
 	rev      int64
+
+	trace *traceutil.Trace
 }
 
-func (s *store) Read() TxnRead {
+func (s *store) Read(trace *traceutil.Trace) TxnRead {
 	s.mu.RLock()
 	tx := s.b.ReadTx()
 	s.revMu.RLock()
 	tx.Lock()
 	firstRev, rev := s.compactMainRev, s.currentRev
 	s.revMu.RUnlock()
-	return newMetricsTxnRead(&storeTxnRead{s, tx, firstRev, rev})
+	return newMetricsTxnRead(&storeTxnRead{s, tx, firstRev, rev, trace})
 }
 
 func (tr *storeTxnRead) FirstRev() int64 { return tr.firstRev }
@@ -66,7 +69,7 @@ func (s *store) Write() TxnWrite {
 	tx := s.b.BatchTx()
 	tx.Lock()
 	tw := &storeTxnWrite{
-		storeTxnRead: storeTxnRead{s, tx, 0, 0},
+		storeTxnRead: storeTxnRead{s, tx, 0, 0, nil},
 		tx:           tx,
 		beginRev:     s.currentRev,
 		changes:      make([]mvccpb.KeyValue, 0, 4),

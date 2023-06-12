@@ -641,7 +641,7 @@ func TestTxnBlockBackendForceCommit(t *testing.T) {
 	s := NewStore(zap.NewExample(), b, &lease.FakeLessor{}, nil)
 	defer os.Remove(tmpPath)
 
-	txn := s.Read()
+	txn := s.Read(nil)
 
 	done := make(chan struct{})
 	go func() {

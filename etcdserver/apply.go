@@ -274,7 +274,8 @@ func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.Ra
 		Count: r.CountOnly,
 	}
 
-	rr, err := txn.Range(context.TODO(), r.Key, mkGteRange(r.RangeEnd), ro)
+	// rr, err := txn.Range(context.TODO(), r.Key, mkGteRange(r.RangeEnd), ro)
+	rr, err := txn.Range(ctx, r.Key, mkGteRange(r.RangeEnd), ro)
 	if err != nil {
 		return nil, err
 	}

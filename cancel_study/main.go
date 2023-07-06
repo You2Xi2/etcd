@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -19,9 +21,9 @@ func test_put(cli clientv3.Client) {
 	fmt.Println(resp)
 }
 
-func test_get(cli clientv3.Client) {
+func test_get(cli clientv3.Client, ttl int) {
 	fmt.Println("start")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(ttl)*time.Millisecond)
 	// ctx, cancel := context.WithCancel(context.Background())
 	// resp, err := cli.Get(ctx, "a", clientv3.WithPrefix())
 	_, err := cli.Get(ctx, "1", clientv3.WithPrefix())
@@ -45,14 +47,14 @@ func main() {
 	}
 	defer cli.Close()
 
-	// test_put(*cli)
+	ttl, _ := strconv.Atoi(os.Args[1])
 
-	for i := 0; i < 100; i++ {
-		go test_get(*cli)
+	for i := 0; i < 10; i++ {
+		go test_get(*cli, ttl)
 		time.Sleep(time.Second)
 	}
 
 	// // Wait for all goroutines to finish
-	time.Sleep(200 * time.Second)
+	time.Sleep(20 * time.Second)
 	fmt.Println("All goroutines have finished.")
 }

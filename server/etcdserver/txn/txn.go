@@ -22,6 +22,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/You2Xi2/auto-cancel-Go/cancellable"
 	pb "go.etcd.io/etcd/api/v3/etcdserverpb"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	"go.etcd.io/etcd/pkg/v3/traceutil"
@@ -119,6 +120,12 @@ func Range(ctx context.Context, lg *zap.Logger, kv mvcc.KV, txnRead mvcc.TxnRead
 
 	resp := &pb.RangeResponse{}
 	resp.Header = &pb.ResponseHeader{}
+
+	var gID uint64
+	var cancel context.CancelFunc
+	ctx, gID, cancel = cancellable.Cancellable_map.CreateCancellable(ctx, true)
+	defer cancellable.Cancellable_map.RemoveCancellable(gID)
+	defer cancel()
 
 	if txnRead == nil {
 		txnRead = kv.Read(mvcc.ConcurrentReadTxMode, trace)

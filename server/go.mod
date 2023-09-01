@@ -43,6 +43,7 @@ require (
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	sigs.k8s.io/yaml v1.3.0
+	github.com/You2Xi2/auto-cancel-Go v0.3.3
 )
 
 require (
@@ -81,6 +82,7 @@ replace (
 	go.etcd.io/etcd/client/v2 => ./../client/internal/v2
 	go.etcd.io/etcd/client/v3 => ../client/v3
 	go.etcd.io/etcd/pkg/v3 => ../pkg
+// github.com/You2Xi2/auto-cancel-Go/cancellable => /home/shuangyu/src/SURE/autocancel-simulation-Go/cancellable
 )
 
 // Bad imports are sometimes causing attempts to pull that code.

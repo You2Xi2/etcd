@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"sort"
 	"time"
 
@@ -26,8 +27,10 @@ import (
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/mvcc"
 	"go.etcd.io/etcd/mvcc/mvccpb"
-		"go.etcd.io/etcd/pkg/traceutil"
+	"go.etcd.io/etcd/pkg/traceutil"
 	"go.etcd.io/etcd/pkg/types"
+
+	"runtime/autocancel"
 
 	"github.com/gogo/protobuf/proto"
 	"go.uber.org/zap"
@@ -171,6 +174,22 @@ func (a *applierV3backend) Apply(r *pb.InternalRaftRequest) *applyResult {
 }
 
 func (a *applierV3backend) Put(txn mvcc.TxnWrite, p *pb.PutRequest) (resp *pb.PutResponse, err error) {
+	// autocancel
+	// create cancellable
+	_, cancel, gID := autocancel.CancellableMap.CreateCancellable(context.TODO(), false)
+
+	defer autocancel.CancellableMap.RemoveCancellable(gID)
+	defer cancel()
+
+	// debug create
+	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	fmt.Fprintf(file, "Create Put cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	file.Close()
+
+	// debug cpu monitor
+	defer printLock(gID)
+	// end autocancel
+
 	resp = &pb.PutResponse{}
 	resp.Header = &pb.ResponseHeader{}
 
@@ -241,7 +260,33 @@ func (a *applierV3backend) DeleteRange(txn mvcc.TxnWrite, dr *pb.DeleteRangeRequ
 	return resp, nil
 }
 
+func printLock(gID uint64) {
+	ts := autocancel.StatMap.GetLock(gID)
+	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	defer file.Close()
+	for _, t := range ts {
+		fmt.Fprintf(file, "lock| gid: %d | tryLock %v | Lock %v | Unlock %v", gID, t.TryLock, t.Lock, t.Unlock)
+	}
+}
+
 func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.RangeRequest) (*pb.RangeResponse, error) {
+	// autocancel
+	// create cancellable
+	cctx, cancel, gID := autocancel.CancellableMap.CreateCancellable(ctx, true)
+	ctx = cctx
+
+	defer autocancel.CancellableMap.RemoveCancellable(gID)
+	defer cancel()
+
+	// debug create
+	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	fmt.Fprintf(file, "Create Range cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	file.Close()
+
+	// debug cpu monitor
+	defer printLock(gID)
+	// end autocancel
+
 	trace, ok := ctx.Value("trace").(*traceutil.Trace)
 	if !ok || trace == nil {
 		trace = traceutil.New("Apply Range")

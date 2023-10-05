@@ -21,8 +21,13 @@
 // etcd binary, work in the `go.etcd.io/etcd/etcdmain` package.
 package main
 
-import "go.etcd.io/etcd/etcdmain"
+import (
+	"runtime/autocancel"
+
+	"go.etcd.io/etcd/etcdmain"
+)
 
 func main() {
+	autocancel.StartAutoCancel()
 	etcdmain.Main()
 }

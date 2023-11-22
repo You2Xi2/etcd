@@ -17,6 +17,8 @@ package mvcc
 import (
 	"context"
 
+	"runtime/autocancel"
+
 	"go.etcd.io/etcd/lease"
 	"go.etcd.io/etcd/mvcc/backend"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -35,6 +37,8 @@ type storeTxnRead struct {
 }
 
 func (s *store) Read(trace *traceutil.Trace) TxnRead {
+	autocancel.AutocancelTryLock(true)
+	defer autocancel.AutocancelLock()
 	s.mu.RLock()
 	tx := s.b.ReadTx()
 	s.revMu.RLock()
@@ -54,6 +58,7 @@ func (tr *storeTxnRead) Range(ctx context.Context, key, end []byte, ro RangeOpti
 func (tr *storeTxnRead) End() {
 	tr.tx.Unlock()
 	tr.s.mu.RUnlock()
+	autocancel.AutocancelUnlock()
 }
 
 type storeTxnWrite struct {
@@ -65,6 +70,8 @@ type storeTxnWrite struct {
 }
 
 func (s *store) Write() TxnWrite {
+	autocancel.AutocancelTryLock(false)
+	defer autocancel.AutocancelLock()
 	s.mu.RLock()
 	tx := s.b.BatchTx()
 	tx.Lock()
@@ -112,6 +119,7 @@ func (tw *storeTxnWrite) End() {
 		tw.s.revMu.Unlock()
 	}
 	tw.s.mu.RUnlock()
+	autocancel.AutocancelUnlock()
 }
 
 func (tr *storeTxnRead) rangeKeys(ctx context.Context, key, end []byte, curRev int64, ro RangeOptions) (*RangeResult, error) {

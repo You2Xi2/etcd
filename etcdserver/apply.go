@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"os"
 	"sort"
 	"time"
 
@@ -182,12 +181,12 @@ func (a *applierV3backend) Put(txn mvcc.TxnWrite, p *pb.PutRequest) (resp *pb.Pu
 	defer cancel()
 
 	// debug create
-	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
-	fmt.Fprintf(file, "Create Put cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
-	file.Close()
+	// file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	// fmt.Fprintf(file, "Create Put cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	// file.Close()
 
 	// debug cpu monitor
-	defer printLock(gID)
+	// defer printLock(gID)
 	// end autocancel
 
 	resp = &pb.PutResponse{}
@@ -260,14 +259,23 @@ func (a *applierV3backend) DeleteRange(txn mvcc.TxnWrite, dr *pb.DeleteRangeRequ
 	return resp, nil
 }
 
-func printLock(gID uint64) {
-	ts := autocancel.StatMap.GetLock(gID)
-	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
-	defer file.Close()
-	for _, t := range ts {
-		fmt.Fprintf(file, "lock| gid: %d | tryLock %v | Lock %v | Unlock %v", gID, t.TryLock, t.Lock, t.Unlock)
-	}
-}
+// func printLock(gID uint64) {
+// 	ts := autocancel.StatMap.GetLock(gID)
+// 	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+// 	defer file.Close()
+// 	formatTime := func(t time.Time) string {
+// 		return t.Format("15:04:05.999999999")
+// 	}
+// 	subTime := func(t1, t2 time.Time) int64 {
+// 		return t2.Sub(t1).Nanoseconds()
+// 	}
+// 	t := ts[len(ts)-1]
+// 	if t.IsRead {
+// 		fmt.Fprintf(file, "lock| gid: %d | read | tryLock %s | Lock %s | Unlock %s | try time %d | lock time %d (ns) \n", gID, formatTime(t.TryLock), formatTime(t.Lock), formatTime(t.Unlock), subTime(t.TryLock, t.Lock), subTime(t.Lock, t.Unlock))
+// 	} else {
+// 		fmt.Fprintf(file, "lock| gid: %d | write | tryLock %s | Lock %s | Unlock %s | try time %d | lock time %d (ns) \n", gID, formatTime(t.TryLock), formatTime(t.Lock), formatTime(t.Unlock), subTime(t.TryLock, t.Lock), subTime(t.Lock, t.Unlock))
+// 	}
+// }
 
 func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.RangeRequest) (*pb.RangeResponse, error) {
 	// autocancel
@@ -279,12 +287,12 @@ func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.Ra
 	defer cancel()
 
 	// debug create
-	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
-	fmt.Fprintf(file, "Create Range cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
-	file.Close()
+	// file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	// fmt.Fprintf(file, "Create Range cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	// file.Close()
 
 	// debug cpu monitor
-	defer printLock(gID)
+	// defer printLock(gID)
 	// end autocancel
 
 	trace, ok := ctx.Value("trace").(*traceutil.Trace)

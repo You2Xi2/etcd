@@ -16,6 +16,7 @@ package mvcc
 
 import (
 	"context"
+	"sync"
 
 	"runtime/autocancel"
 
@@ -149,7 +150,14 @@ func (tr *storeTxnRead) rangeKeys(ctx context.Context, key, end []byte, curRev i
 
 	kvs := make([]mvccpb.KeyValue, limit)
 	revBytes := newRevBytes()
+	current := 0
+	var autocancelMu sync.Mutex
+	autocancel.AutocancelProgressInit(len(kvs), &current, &autocancelMu)
 	for i, revpair := range revpairs[:len(kvs)] {
+		autocancelMu.Lock()
+		current = i
+		autocancelMu.Unlock()
+
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()

@@ -28,6 +28,6 @@ import (
 )
 
 func main() {
-	autocancel.StartAutoCancel()
+	autocancel.StartAutoCancel(autocancel.PredictLockPolicy)
 	etcdmain.Main()
 }

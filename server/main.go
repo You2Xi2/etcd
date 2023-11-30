@@ -23,10 +23,13 @@ package main
 
 import (
 	"os"
+	"runtime/autocancel"
 
 	"go.etcd.io/etcd/server/v3/etcdmain"
 )
 
 func main() {
+	// runtime.GOMAXPROCS(4)
+	autocancel.StartAutoCancel()
 	etcdmain.Main(os.Args)
 }

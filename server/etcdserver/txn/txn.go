@@ -18,11 +18,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"runtime/autocancel"
 	"sort"
 
 	"go.uber.org/zap"
 
-	"github.com/You2Xi2/auto-cancel-Go/cancellable"
 	pb "go.etcd.io/etcd/api/v3/etcdserverpb"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	"go.etcd.io/etcd/pkg/v3/traceutil"
@@ -33,6 +33,23 @@ import (
 )
 
 func Put(ctx context.Context, lg *zap.Logger, lessor lease.Lessor, kv mvcc.KV, txnWrite mvcc.TxnWrite, p *pb.PutRequest) (resp *pb.PutResponse, trace *traceutil.Trace, err error) {
+	// autocancel
+	// create cancellable
+	cctx, cancel, gID := autocancel.CancellableMap.CreateCancellable(ctx, false)
+	ctx = cctx
+
+	defer autocancel.CancellableMap.RemoveCancellable(gID)
+	defer cancel()
+
+	// debug create
+	// file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	// fmt.Fprintf(file, "Create Put cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	// file.Close()
+
+	// debug cpu monitor
+	// defer printCPU(gID)
+	// end autocancel
+
 	resp = &pb.PutResponse{}
 	resp.Header = &pb.ResponseHeader{}
 	trace = traceutil.Get(ctx)
@@ -115,17 +132,35 @@ func DeleteRange(kv mvcc.KV, txnWrite mvcc.TxnWrite, dr *pb.DeleteRangeRequest) 
 	return resp, nil
 }
 
+// func printCPU(gID uint64) {
+// 	s := autocancel.StatMap.GetCPU(gID).GExecutionStat
+// 	file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+// 	defer file.Close()
+// 	fmt.Fprintf(file, "cpu| gid: %d | Scheduling Wait Time: %d \n", gID, s.SchedWaitTime)
+// }
+
 func Range(ctx context.Context, lg *zap.Logger, kv mvcc.KV, txnRead mvcc.TxnRead, r *pb.RangeRequest) (*pb.RangeResponse, error) {
+	// autocancel
+	// create cancellable
+	cctx, cancel, gID := autocancel.CancellableMap.CreateCancellable(ctx, true)
+	ctx = cctx
+
+	defer autocancel.CancellableMap.RemoveCancellable(gID)
+	defer cancel()
+
+	// debug create
+	// file, _ := os.OpenFile("autocancel.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	// fmt.Fprintf(file, "Create Range cancellable %d | Size: %d\n", gID, autocancel.CancellableMap.GetSize())
+	// file.Close()
+
+	// debug cpu monitor
+	// defer printCPU(gID)
+	// end autocancel
+
 	trace := traceutil.Get(ctx)
 
 	resp := &pb.RangeResponse{}
 	resp.Header = &pb.ResponseHeader{}
-
-	var gID uint64
-	var cancel context.CancelFunc
-	ctx, gID, cancel = cancellable.Cancellable_map.CreateCancellable(ctx, true)
-	defer cancellable.Cancellable_map.RemoveCancellable(gID)
-	defer cancel()
 
 	if txnRead == nil {
 		txnRead = kv.Read(mvcc.ConcurrentReadTxMode, trace)

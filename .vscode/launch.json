@@ -8,6 +8,11 @@
       "name": "Launch Package",
       "type": "go",
       "request": "launch",
+      "env": {
+        "GOROOT": "/home/shuangyu/src/SURE/go",
+        "GOBIN": "/home/shuangyu/src/SURE/go/bin",
+        "PATH": "/home/shuangyu/src/SURE/go/bin:${env:PATH}"
+      },
       // "mode": "exec",
       // "program": "${workspaceFolder}/bin/etcd",
       "mode": "debug",

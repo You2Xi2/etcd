@@ -43,7 +43,7 @@ require (
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	sigs.k8s.io/yaml v1.3.0
-	github.com/You2Xi2/auto-cancel-Go v0.3.3
+	// github.com/You2Xi2/auto-cancel-Go v0.3.3
 )
 
 require (

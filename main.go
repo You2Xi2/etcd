@@ -28,6 +28,6 @@ import (
 )
 
 func main() {
-	autocancel.StartAutoCancel(autocancel.LockPolicy)
+	autocancel.StartAutoCancel(autocancel.MultiObjectPolicy)
 	etcdmain.Main()
 }

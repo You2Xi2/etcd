@@ -30,6 +30,6 @@ import (
 
 func main() {
 	// runtime.GOMAXPROCS(4)
-	autocancel.StartAutoCancel(autocancel.CpuPolicy)
+	autocancel.StartAutoCancel(autocancel.CpuPolicy, true)
 	etcdmain.Main(os.Args)
 }

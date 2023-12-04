@@ -143,6 +143,7 @@ func Range(ctx context.Context, lg *zap.Logger, kv mvcc.KV, txnRead mvcc.TxnRead
 	// autocancel
 	// create cancellable
 	cctx, cancel, gID := autocancel.CancellableMap.CreateCancellable(ctx, true)
+	originalCtx := ctx
 	ctx = cctx
 
 	defer autocancel.CancellableMap.RemoveCancellable(gID)
@@ -187,7 +188,19 @@ func Range(ctx context.Context, lg *zap.Logger, kv mvcc.KV, txnRead mvcc.TxnRead
 
 	rr, err := txnRead.Range(ctx, r.Key, mkGteRange(r.RangeEnd), ro)
 	if err != nil {
-		return nil, err
+		signalCh := autocancel.GetRerunSignalCh(gID)
+		if signalCh != nil { // rerun
+			select {
+			case <-signalCh:
+				rr, err = txnRead.Range(originalCtx, r.Key, mkGteRange(r.RangeEnd), ro)
+			case <-originalCtx.Done():
+				return nil, fmt.Errorf("range: context cancelled: %w", originalCtx.Err())
+			}
+		}
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if r.MaxModRevision != 0 {

@@ -281,6 +281,7 @@ func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.Ra
 	// autocancel
 	// create cancellable
 	cctx, cancel, gID := autocancel.CancellableMap.CreateCancellable(ctx, true)
+	originalCtx := ctx
 	ctx = cctx
 
 	defer autocancel.CancellableMap.RemoveCancellable(gID)
@@ -330,7 +331,19 @@ func (a *applierV3backend) Range(ctx context.Context, txn mvcc.TxnRead, r *pb.Ra
 	// rr, err := txn.Range(context.TODO(), r.Key, mkGteRange(r.RangeEnd), ro)
 	rr, err := txn.Range(ctx, r.Key, mkGteRange(r.RangeEnd), ro)
 	if err != nil {
-		return nil, err
+		signalCh := autocancel.GetRerunSignalCh(gID)
+		if signalCh != nil { // rerun
+			select {
+			case <-signalCh:
+				rr, err = txn.Range(originalCtx, r.Key, mkGteRange(r.RangeEnd), ro)
+			case <-originalCtx.Done():
+				return nil, fmt.Errorf("range: context cancelled: %w", originalCtx.Err())
+			}
+		}
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if r.MaxModRevision != 0 {
